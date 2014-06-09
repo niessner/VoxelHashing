@@ -1,0 +1,14 @@
+Code authors
+Matthias Niessner (niessner@cs.stanford.edu)
+Michael Zollhoefer (michael.zollhoefer@cs.fau.de)
+
+Paper Authors: Real-time 3D Reconstruction at Scale using Voxel Hashing
+Matthias Niessner (niessner@cs.stanford.edu)
+Michal Zollhoefer (michael.zollhoefer@cs.fau.de)
+Shahram Izadi (sharami@microsoft.com)
+Marc Stamminger (marc.stamminger@cs.fau.de)
+
+Paper Authors: Combining Inertial Navigation and ICP for Real-time 3D Surface Reconstruction
+Matthias Niessner (niessner@cs.stanford.edu)
+Angela Dai (adai@cs.stanford.edu)
+Matthew Fisher (mdfisher@stanford.edu)
