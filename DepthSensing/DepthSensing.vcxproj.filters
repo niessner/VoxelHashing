@@ -1,0 +1,451 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DXUT\Core\DXUT.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Optional\DXUTcamera.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Core\DXUTDevice11.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Core\DXUTDevice9.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Optional\DXUTgui.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Core\DXUTmisc.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Optional\DXUTres.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Optional\DXUTsettingsdlg.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Optional\SDKmesh.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="DXUT\Optional\SDKmisc.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StdOutputLogger.cpp" />
+    <ClCompile Include="Source\TimingLog.cpp" />
+    <ClCompile Include="Source\TrajectoryLogReader.cpp" />
+    <ClCompile Include="Source\VoxelUtilHashSDF.cpp" />
+    <ClCompile Include="Source\DepthSensing.cpp" />
+    <ClCompile Include="Source\DX11BuildLinearSystem.cpp" />
+    <ClCompile Include="Source\DX11CameraTrackingMultiRes.cpp" />
+    <ClCompile Include="Source\DX11HistogramHashSDF.cpp" />
+    <ClCompile Include="Source\DX11ImageHelper.cpp" />
+    <ClCompile Include="Source\DX11MarchingCubesChunkGrid.cpp" />
+    <ClCompile Include="Source\DX11MarchingCubesHashSDF.cpp" />
+    <ClCompile Include="Source\DX11NormalizeReduction.cpp" />
+    <ClCompile Include="Source\DX11PhongLighting.cpp" />
+    <ClCompile Include="Source\DX11QuadDrawer.cpp" />
+    <ClCompile Include="Source\DX11RayCastingHashSDF.cpp" />
+    <ClCompile Include="Source\DX11RayMarchingStepsSplatting.cpp" />
+    <ClCompile Include="Source\DX11ScanCS.cpp" />
+    <ClCompile Include="Source\DX11SceneRepChunkGrid.cpp" />
+    <ClCompile Include="Source\DX11SceneRepHashSDF.cpp" />
+    <ClCompile Include="Source\DX11Utils.cpp" />
+    <ClCompile Include="Source\GlobalAppState.cpp" />
+    <ClCompile Include="Source\GlobalCameraTrackingState.cpp" />
+    <ClCompile Include="Source\removeDuplicate.cpp" />
+    <ClCompile Include="Source\ICPErrorLog.cpp" />
+    <ClCompile Include="Source\BinaryDumpReader.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ChristophSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PrimeSenseSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImageReaderSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\KinectOneSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\KinectSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11DepthSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DepthSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\stdafx.cpp" />
+    <ClCompile Include="Include\mLib\grid2d.cpp">
+      <Filter>mLib</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\mLib\grid3d.cpp">
+      <Filter>mLib</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\mLib\meshIO.cpp">
+      <Filter>mLib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DXUT\Optional\DXUTsettingsdlg.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Core\DXUT.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Optional\DXUTcamera.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Core\DXUTDevice11.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Core\DXUTDevice9.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Optional\DXUTgui.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Core\DXUTmisc.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Optional\DXUTres.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Optional\SDKmisc.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="DXUT\Optional\SDKmesh.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\removeDuplicate.h" />
+    <ClInclude Include="Source\StdOutputLogger.h" />
+    <ClInclude Include="Source\TimingLog.h" />
+    <ClInclude Include="Source\TrajectoryLogReader.h" />
+    <ClInclude Include="Source\VoxelUtilHashSDF.h" />
+    <ClInclude Include="Source\BitArray.h" />
+    <ClInclude Include="Source\DepthSensing.h" />
+    <ClInclude Include="Source\DX11BuildLinearSystem.h" />
+    <ClInclude Include="Source\DX11CameraTrackingMultiRes.h" />
+    <ClInclude Include="Source\DX11HistogramHashSDF.h" />
+    <ClInclude Include="Source\DX11ImageHelper.h" />
+    <ClInclude Include="Source\DX11MarchingCubesChunkGrid.h" />
+    <ClInclude Include="Source\DX11MarchingCubesHashSDF.h" />
+    <ClInclude Include="Source\DX11NormalizeReduction.h" />
+    <ClInclude Include="Source\DX11PhongLighting.h" />
+    <ClInclude Include="Source\DX11QuadDrawer.h" />
+    <ClInclude Include="Source\DX11RayCastingHashSDF.h" />
+    <ClInclude Include="Source\DX11RayMarchingStepsSplatting.h" />
+    <ClInclude Include="Source\DX11ScanCS.h" />
+    <ClInclude Include="Source\DX11SceneRepChunkGrid.h" />
+    <ClInclude Include="Source\DX11SceneRepHashSDF.h" />
+    <ClInclude Include="Source\DX11Utils.h" />
+    <ClInclude Include="Source\Eigen.h" />
+    <ClInclude Include="Source\GlobalAppState.h" />
+    <ClInclude Include="Source\GlobalCameraTrackingState.h" />
+    <ClInclude Include="Source\MatrixConversion.h" />
+    <ClInclude Include="Source\ICPErrorLog.h" />
+    <ClInclude Include="Source\BinaryDumpReader.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ChristophSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PrimeSenseSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImageReaderSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\KinectOneSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\KinectSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX11DepthSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DepthSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\stdafx.h" />
+    <ClInclude Include="Include\mLib\common.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\console.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\freeImageWrapper.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\freeImageWrapperHelper.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\grid2d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\grid3d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\matrix2x2.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\matrix3x3.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\matrix4x4.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\meshData.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\meshIO.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\mLib.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\parameterFile.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\point1d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\point2d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\point3d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\point4d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\point6d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\PointCloudIO.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\ray.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\sparseGrid3d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\StringCounter.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\stringUtil.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\stringUtilConvert.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\StringUtilOld.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\timer.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\utility.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\zconf.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\zlib.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\ZLibWrapper.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\baseImage.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\baseImageHelper.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\binaryDataBuffer.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\binaryDataCompressor.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\binaryDataSerialize.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\binaryDataStream.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\boundingBox3d.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\mLib\calibratedSensorData.h">
+      <Filter>mLib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{079f8b20-cb8a-4afa-b8c9-8a83893374ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXUT">
+      <UniqueIdentifier>{ff781c04-0d87-4a61-be0a-cf2fdc2ba5e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sensors">
+      <UniqueIdentifier>{c8fa2f52-931f-4cf9-a20c-f2215b25065e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mLib">
+      <UniqueIdentifier>{c266dba6-4678-4526-ae6e-ea7525e44ae8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Erode.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\ExtractIsoSurface.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\ExtractIsoSurfaceHashSDF.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\GlobalAppStateShaderBuffer.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\HistogramHashSDF.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\HSVDepthMapComputation.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\KinectCameraUtil.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\IntegrateFromGlobalHash.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\IntegrateDepthFrame.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\NormalComputation.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\NormalizeReduction.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\PhongLighting.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\ProjectiveCorrespondences.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\QuadDrawer.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayCasting.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayCastingHashSDF.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayMarchingStepsSplatting.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayIntervalSplatting.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayCastingUtilHashSDF.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayCastingUtil.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayCastingHashSDFTraversalSimple.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayCastingHashSDFTraversal.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Reset.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\SplatWeightDivide.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\SetDistanceFunctionEllipsoid.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\SetConstant.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\SDFShaderBuffer.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\SceneRepSDF.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\SceneRep.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\ScanCS.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Downsampling.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\DepthMapComputation.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Copy.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\ComputeSSAOMap.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\ChunkToGlobalHash.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\CameraSpaceProjection.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\BuildLinearSystem.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\BlockAveraging.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\BilateralFilterSSAO.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\BilateralFilterApprox.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\BilateralFilter.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Tables.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\SubSampling.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\StereoMaskCameraSpaceProjection.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\VoxelUtil.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\VoxelSplatting.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Util.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\VoxelUtilHashSDF.h.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>

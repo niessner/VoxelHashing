@@ -1,0 +1,116 @@
+//DEFAULT PARAMETER FILE
+
+//#ifdef KINECT_ONE
+//// 0 = Kinect, 1 = PrimeSense, 2 = SoftKinect, 3 = BinaryDumpOld, 4 = ImageReader, 5 = KinectOneSensor, 6 = Christoph Sesnor, 7 = BinaryDumpReader
+//GlobalAppState::s_sensorIdx = 5;
+//#else
+s_sensorIdx = 0;
+//#endif
+s_ImageReaderSensorSourcePath = "../stanfordData/copyroom_png/";	//just for image reader sensor, where images are loaded
+s_ImageReaderSensorNumFrames = 0;									//dumps the data after n frames (for every reader)
+
+s_timingsDetailledEnabled = false;
+s_timingsStepsEnabled = false;
+s_timingsTotalEnabled = false;
+
+//#ifdef KINECT_ONE
+//s_windowWidth = 512;
+//s_windowHeight = 424;
+//#else
+s_windowWidth = 320;
+s_windowHeight = 240;
+s_outputWindowWidth = 800
+s_outputWindowHeight = 600;
+//#endif
+s_RenderMode = 0;
+s_DisplayTexture = 3;
+
+s_bRenderModeChanged = true;
+s_bFilterKinectInputData = false;
+
+s_bEnableGlobalLocalStreaming = false;
+s_bEnableGarbageCollection = false;
+
+s_hashNumBucketsLocal = 300000;
+s_hashNumBucketsGlobal = 1337;		// Is not used in the current implementation
+//s_hashNumSDFBlocks = 0x1 << 18;	//17 on GTX 480; 18 on GTX TITAN (due to memory requirements)
+s_hashNumSDFBlocks = 262144;
+s_initialChunkListSize = 2000;
+s_hashStreamOutParts = 80;
+
+s_hashBucketSizeLocal = 2;
+s_hashBucketSizeGlobal = 1337;		// Is not used in the current implementation
+
+s_virtualVoxelSize = 0.010f;	//in meters
+//s_thresMarchingCubes = 10.0f*s_virtualVoxelSize;
+//s_thresMarchingCubes2 = 10.0f*s_virtualVoxelSize;
+s_thresMarchingCubes = 0.04f;
+s_thresMarchingCubes2 = 0.04f;
+
+s_applicationDisabled = false;
+
+s_StreamingRadius = 5.0f; // Depends on DepthMin and DepthMax 
+s_StreamingPos = 0.0f 0.0f 3.0f 1.0f; // Depends on DepthMin and DepthMax
+
+s_voxelExtends = 1.0f 1.0f 1.0f;
+s_gridDimensions = 257 257 257; // dimensions have to be odd (number of samples)
+//s_minGridPos = -s_gridDimensions/2;
+s_minGridPos = -128 -128 -128;
+s_nBitsInT = 32;
+
+s_WeightSample = 3;
+s_WeightMax = 255;
+
+s_maxIntegrationDistance = 3.0f;
+s_SensorDepthWorldMin = 0.4f;
+s_SensorDepthWorldMax = 4.0f;
+
+s_Truncation = 0.06f;
+s_TruncScale = 0.02f;
+
+//s_rayIncrement = 0.8f*s_Truncation;
+//s_thresSampleDist = 50.5f*s_rayIncrement;
+//s_thresDist = 50.5f*s_rayIncrement;
+s_rayIncrement = 0.06f;
+s_thresSampleDist = 1.6f;
+s_thresDist = 1.6f;
+
+s_HANDLE_COLLISIONS = 1; // 1 with collision handling, 0 without, also defined in the shader
+
+s_materialShininess = 16.0f;
+s_materialDiffuse = 1.0f 0.9f 0.7f 1.0f;
+s_materialSpecular = 1.0f 1.0f 1.0f 1.0f;
+s_lightAmbient = 0.4f 0.4f 0.4f 1.0f;
+//s_lightDiffuse = 1.00f 0.8824f 0.761f 1.0f;
+s_lightDiffuse = 0.6f 0.52944f 0.4566f 0.6f;
+s_lightSpecular = 0.3f 0.3f 0.3f 1.0f;
+s_lightDir = 0.0f 1.0f -2.0f 1.0f;
+
+s_MaxLoopIterCount = 1024;
+s_MaxCollisionLinkedListSize = 7;
+
+s_useGradients = false;
+s_enableMultiLayerSplatting = false;
+s_BinaryDumpReaderSourceFile = "../bundle/15-70/dump.sensor";
+s_usePreComputedCameraTrajectory = false;
+s_PreComputedCameraTrajectoryPath = "../bundle/15-70/bundle.log";
+s_DataDumpPath = "DataDump/";
+s_DataDumpDepthData = false;
+s_DataDumpColorData = false;
+s_DataDumpRigidTransform = false;
+
+s_stereoEnabled = false;
+s_windowWidthStereo = 1920;
+s_windowHeightStereo = 1080;
+s_currentlyInStereoMode = false; // Default state
+
+
+s_bRegistrationEnabled = true;
+s_bDisableIntegration = false;
+s_bApplicationEnabled = true;
+
+s_RecordData = true;
+s_RecordDataFile = "DataDump/recording.sensor";
+s_DumpVoxelGridFrames = 0;
+s_DumpVoxelGridFile = "DataDump/sparseVoxelGrid";
+s_DumpAllRendering = false;

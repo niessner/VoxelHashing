@@ -1,0 +1,14 @@
+//Default Tracking Parameters
+s_maxLevels = 1;
+s_blockSizeNormalize[0] = 512;
+s_numBucketsNormalize[0] = 1024;
+s_localWindowSize[0] = 12;
+s_maxOuterIter[0] = 20;
+s_maxInnerIter[0] = 1;
+s_distThres[0] = 0.15f;
+s_normalThres[0] = 0.97f;
+
+//s_angleTransThres[0] = (30000.0f/180.0f)*M_PI;// radians
+s_angleTransThres[0] = 3000.0f;// radians
+s_distTransThres[0] = 3000.4f; // meters
+s_residualEarlyOut[0] = 0.01f;	//causes an early out if residual is smaller than this number (no early out if set to zero)
