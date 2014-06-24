@@ -240,41 +240,7 @@ void* CreateAndCopyToDebugBuf( ID3D11Device* pDevice, ID3D11DeviceContext* pd3dI
 	memcpy((void*)cpuMemory, (void*)mappedResource.pData, desc.ByteWidth);
 	pd3dImmediateContext->Unmap( debugbuf, 0 );
 
-
-
-
-
-	/*for(unsigned int i = 0; i<10; i++)
-	{
-		if(i%2 == 0)
-		{
-			int tmp = cpuMemory[i];
-
-			int* ptmp = &tmp;
-			float* pf = (float*)ptmp;
-
-			std::cout << *pf << std::endl;
-		}
-		else
-		{
-			int tmp = cpuMemory[i];
-			int w = tmp & 0x000000ff;
-			tmp >>= 0x8;
-			int r = tmp & 0x000000ff;
-			tmp >>= 0x8;
-			int g = tmp & 0x000000ff;
-			tmp >>= 0x8;
-			int b = tmp & 0x000000ff;
-
-			std::cout << r << std::endl;
-			std::cout << g << std::endl;
-			std::cout << b << std::endl;
-			std::cout << w << std::endl;
-		}
-	}*/
 	
-
-
 	SAFE_RELEASE(debugbuf);
 	if (returnCPUMemory)	{
 		return (void*)cpuMemory;
@@ -285,7 +251,7 @@ void* CreateAndCopyToDebugBuf( ID3D11Device* pDevice, ID3D11DeviceContext* pd3dI
 }
 
 
-void CreateAndCopyToDebugTexture2D( ID3D11Device* pDevice, ID3D11DeviceContext* pd3dImmediateContext, ID3D11Texture2D* pBufferTex )
+void* CreateAndCopyToDebugTexture2D( ID3D11Device* pDevice, ID3D11DeviceContext* pd3dImmediateContext, ID3D11Texture2D* pBufferTex, bool returnCPUMemory )
 {
 	ID3D11Texture2D* debugtex = NULL;
 
@@ -317,7 +283,13 @@ void CreateAndCopyToDebugTexture2D( ID3D11Device* pDevice, ID3D11DeviceContext* 
 	}
 
 	SAFE_RELEASE(debugtex);
-	SAFE_DELETE_ARRAY(cpuMemory);
+
+	if (returnCPUMemory)	{
+		return (void*)cpuMemory;
+	} else {
+		SAFE_DELETE_ARRAY(cpuMemory);
+		return NULL;
+	}
 }
 
 

@@ -76,7 +76,7 @@ HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR sz
 double GetTime();
 bool OpenFileDialog(OPENFILENAME& ofn);
 void* CreateAndCopyToDebugBuf( ID3D11Device* pDevice, ID3D11DeviceContext* pd3dImmediateContext, ID3D11Buffer* pBuffer, bool returnCPUMemory = false );
-void CreateAndCopyToDebugTexture2D( ID3D11Device* pDevice, ID3D11DeviceContext* pd3dImmediateContext, ID3D11Texture2D* pBufferTex );
+void* CreateAndCopyToDebugTexture2D( ID3D11Device* pDevice, ID3D11DeviceContext* pd3dImmediateContext, ID3D11Texture2D* pBufferTex, bool returnCPUMemory = false );
 void AddDefinitionToMacro( D3D_SHADER_MACRO source[9], D3D_SHADER_MACRO dest[10], D3D_SHADER_MACRO &addMacro );
 void SetRSCulling (ID3D11RasterizerState** rs, D3D11_CULL_MODE cm);
 void SetRSDrawing(ID3D11RasterizerState** rs, D3D11_FILL_MODE fm);
