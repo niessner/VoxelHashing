@@ -9,6 +9,8 @@
 //Only working with OpenNI 2 SDK
 #ifdef OPEN_NI
 
+#pragma comment( lib, "OpenNI2" )
+
 #include "DepthSensor.h"
 #include <OpenNI.h>
 

@@ -8,7 +8,7 @@
 //#define KINECT_ONE
 
 // Only works when OpenNI 2 SDK is installed
-#define OPEN_NI
+//#define OPEN_NI
 
 #include "DX11Utils.h"
 #include "DXUT.h"
