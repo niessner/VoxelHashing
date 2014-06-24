@@ -68,7 +68,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>zlib64.lib;Kinect10.lib;d3d11.lib;d3dcompiler.lib;d3dx11d.lib;d3dx9d.lib;dxerr.lib;dxguid.lib;winmm.lib;comctl32.lib;Shlwapi.lib;D3dcsx.lib;OpenNI2.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>zlib64.lib;Kinect10.lib;d3d11.lib;d3dcompiler.lib;d3dx11d.lib;d3dx9d.lib;dxerr.lib;dxguid.lib;winmm.lib;comctl32.lib;Shlwapi.lib;D3dcsx.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OPENNI2_LIB64);Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
