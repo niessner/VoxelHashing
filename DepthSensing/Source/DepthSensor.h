@@ -190,34 +190,24 @@ class DepthSensor
 			m_RecordedColor.clear();
 
 			m_accumulatedPoints.clear();
-			m_accumulatedColors.clear();
-			m_accumulatedNormals.clear();
 		}
 
 		void recordPointCloud(const mat4f& transform = mat4f::identity()) {
-			m_accumulatedPoints.push_back(std::vector<vec3f>());
-			m_accumulatedColors.push_back(std::vector<vec3f>());
-			m_accumulatedNormals.push_back(std::vector<vec3f>());
-			computePointCurrentPointCloud(m_accumulatedPoints.back(), m_accumulatedColors.back(), m_accumulatedNormals.back(), transform);
+			m_accumulatedPoints.push_back(PointCloudf());
+			computePointCurrentPointCloud(m_accumulatedPoints.back(), transform);
 		}
 
 		void saveRecordedPointCloud(const std::string& filename) {
 
-			std::vector<vec3f> points;
-			std::vector<vec3f> colors;
-			std::vector<vec3f> normals;
+			PointCloudf pc;
 			
 			for (const auto& p : m_accumulatedPoints ) {
-				points.insert(points.end(), p.begin(), p.end());
-			}
-			for (const auto& c : m_accumulatedColors) {
-				colors.insert(colors.end(), c.begin(), c.end());
-			}
-			for (const auto& n : m_accumulatedNormals) {
-				normals.insert(normals.end(), n.begin(), n.end());
+				pc.m_points.insert(pc.m_points.end(), p.m_points.begin(), p.m_points.end());
+				pc.m_colors.insert(pc.m_colors.end(), p.m_colors.begin(), p.m_colors.end());
+				pc.m_normals.insert(pc.m_normals.end(), p.m_normals.begin(), p.m_normals.end());
 			}
 
-			PointCloudIOf::saveToFile(filename, &points, &normals, &colors);
+			PointCloudIOf::saveToFile(filename,pc);
 			//if (colors.size() > 0) {
 			//	assert(points.size() == colors.size());
 			//	PointCloudIOf::saveToFile(filename, &points, NULL, &colors);
@@ -226,8 +216,7 @@ class DepthSensor
 			//}
 
 			m_accumulatedPoints.clear();
-			m_accumulatedColors.clear();
-			m_accumulatedNormals.clear();
+
 		}
 
 		//! records the current frame and allocates memory accordingly
@@ -294,11 +283,10 @@ class DepthSensor
 
 	private:
 
-		std::list<std::vector<vec3f>> m_accumulatedPoints;
-		std::list<std::vector<vec3f>> m_accumulatedColors;
-		std::list<std::vector<vec3f>> m_accumulatedNormals;
+		std::list<PointCloudf> m_accumulatedPoints;
 
-		void computePointCurrentPointCloud(std::vector<vec3f>& points, std::vector<vec3f>& colors, std::vector<vec3f>& normals, const mat4f& transform = mat4f::identity()) const {
+
+		void computePointCurrentPointCloud(PointCloudf& pc, const mat4f& transform = mat4f::identity()) const {
 
 			if (!(getColorWidth() == getDepthWidth() && getColorHeight() == getDepthHeight()))	throw MLIB_EXCEPTION("invalid dimensions");
 
@@ -309,10 +297,10 @@ class DepthSensor
 				if (p.x != -FLT_MAX && p.x != 0.0f)	{
 					vec3f n = getNormal(x,y);
 					if (n.x != -FLT_MAX) {
-						points.push_back(p);
-						normals.push_back(n);
+						pc.m_points.push_back(p);
+						pc.m_normals.push_back(n);
 						vec4ui c = vec4ui(m_colorRGBX[4*i+0],m_colorRGBX[4*i+1],m_colorRGBX[4*i+2],m_colorRGBX[4*i+3]);
-						colors.push_back(vec3f(c.z/255.0f, c.y/255.0f, c.x/255.0f));	//there's a swap... dunno why really
+						pc.m_colors.push_back(vec4f(c.z/255.0f, c.y/255.0f, c.x/255.0f, 1.0f));	//there's a swap... dunno why really
 					}
 				}
 			}
@@ -326,11 +314,11 @@ class DepthSensor
 			//		}
 			//	}
 			//}  
-			for (auto& p : points) {
+			for (auto& p : pc.m_points) {
 				p = transform * p;
 			}
 			mat4f invTranspose = transform.getInverse().getTranspose();
-			for (auto& n : normals) {
+			for (auto& n : pc.m_normals) {
 				n = invTranspose * n;
 				n.normalize();
 			}

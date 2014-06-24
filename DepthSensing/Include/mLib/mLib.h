@@ -24,17 +24,19 @@
 #include "parameterFile.h"
 #include "sparseGrid3d.h"
 #include "baseImage.h"
-#include "calibratedSensorData.h"
-#include "ZLibWrapper.h"
-#include "freeImageWrapper.h"
 
 #include "ray.h"
 #include "plane.h"
 #include "boundingBox3d.h"
 #include "meshData.h"
 #include "meshIO.h"
-#include "PointCloudIO.h"	//%TODO write a new 
+#include "PointCloud.h"
+#include "PointCloudIO.h"
 #include "StringCounter.h"
+
+#include "calibratedSensorData.h"
+#include "ZLibWrapper.h"
+#include "freeImageWrapper.h"
 
 using namespace ml;
 

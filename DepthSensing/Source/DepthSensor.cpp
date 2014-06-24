@@ -46,13 +46,11 @@ DepthSensor::~DepthSensor()
 
 void DepthSensor::savePointCloud( const std::string& filename, const mat4f& transform) const
 {
-	std::vector<vec3f> points;
-	std::vector<vec3f> colors;
-	std::vector<vec3f> normals;
 
-	computePointCurrentPointCloud(points, colors, normals, transform);
+	PointCloudf pc;
+	computePointCurrentPointCloud(pc, transform);
 
-	PointCloudIOf::saveToFile(filename, &points, &normals, &colors);
+	PointCloudIOf::saveToFile(filename, pc);
 	//if (colors.size() > 0) {
 	//	assert(points.size() == colors.size());
 	//	PointCloudIOf::saveToFile(filename, &points, NULL, &colors);

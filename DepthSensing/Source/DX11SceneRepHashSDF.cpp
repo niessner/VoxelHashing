@@ -432,7 +432,7 @@ HRESULT DX11SceneRepHashSDF::DumpPointCloud( const std::string &filename, ID3D11
 	memcpy((void*)cpuMemory, (void*)mappedResource.pData, desc.ByteWidth);
 	pd3dImmediateContext->Unmap( debugbuf, 0 );
 
-	std::vector<vec3f> points;
+	PointCloudf points;
 	for (unsigned int i = 0; i < numElements / 3; i++) {
 		if (cpuMemory[3*i+2] == -2)	continue;	//ignore non-allocated voxels
 
@@ -448,12 +448,12 @@ HRESULT DX11SceneRepHashSDF::DumpPointCloud( const std::string &filename, ID3D11
 		p.x = (float)a.x;
 		p.y = (float)a.y;
 		p.z = (float)a.z;
-		points.push_back(p);
+		points.m_points.push_back(p);
 	}
 
 
-	std::cout << "Dumping voxel grid " << filename <<  " ( " << points.size() << " ) ...";
-	PointCloudIOf::saveToFile(filename, &points, NULL, NULL);
+	std::cout << "Dumping voxel grid " << filename <<  " ( " << points.m_points.size() << " ) ...";
+	PointCloudIOf::saveToFile(filename, points);
 	std::cout << " done!" << std::endl;
 	SAFE_RELEASE(debugbuf);
 	SAFE_DELETE_ARRAY(cpuMemory);
