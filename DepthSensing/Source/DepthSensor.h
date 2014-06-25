@@ -276,6 +276,10 @@ class DepthSensor
 			m_RecordedColor.clear();
 		}
 
+		//! returns the current rigid transform (if available; designed for binary dump sensor);
+		virtual mat4f getRigidTransform() const {
+			return mat4f::identity();
+		}
 	protected:
 		//! depth and color data filled by respective child classes
 		USHORT* m_depthD16;
