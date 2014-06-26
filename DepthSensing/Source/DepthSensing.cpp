@@ -44,9 +44,9 @@ int main(int argc, char** argv) {
 			fileNameDescGlobalTracking = std::string(argv[2]);
 		} else {
 			std::cout << "usage: DepthSensing [fileNameDescGlobalApp] [fileNameDescGlobalTracking]" << std::endl;
-			//fileNameDescGlobalApp = "zParametersDefault.txt";
+			fileNameDescGlobalApp = "zParametersDefault.txt";
 			//fileNameDescGlobalApp = "zParametersManolisScan.txt";
-			fileNameDescGlobalApp = "zParametersCSDZFile.txt";
+			//fileNameDescGlobalApp = "zParametersCSDZFile.txt";
 			fileNameDescGlobalTracking = "zParametersTrackingDefault.txt";
 		}
 		std::cout << VAR_NAME(fileNameDescGlobalApp) << " = " << fileNameDescGlobalApp << std::endl;

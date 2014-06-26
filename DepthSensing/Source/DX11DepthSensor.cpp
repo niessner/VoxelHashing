@@ -26,9 +26,9 @@ DX11Sensor::DX11Sensor()
 	m_pDepthTextureFloat4SRV = NULL;
 	m_pDepthTextureFloat4UAV = NULL;
 
-	m_pDepthTextureFloat4NoSmoothing2D = NULL;
-	m_pDepthTextureFloat4NoSmoothingSRV = NULL;
-	m_pDepthTextureFloat4NoSmoothingUAV = NULL;
+	//m_pDepthTextureFloat4NoSmoothing2D = NULL;
+	//m_pDepthTextureFloat4NoSmoothingSRV = NULL;
+	//m_pDepthTextureFloat4NoSmoothingUAV = NULL;
 
 	m_pHSVDepthTextureFloat42D = NULL;
 	m_pHSVDepthTextureFloat4SRV = NULL;
@@ -75,9 +75,9 @@ void DX11Sensor::OnD3D11DestroyDevice()
 	SAFE_RELEASE(m_pDepthTextureFloat4SRV);
 	SAFE_RELEASE(m_pDepthTextureFloat4UAV);
 
-	SAFE_RELEASE(m_pDepthTextureFloat4NoSmoothing2D);
-	SAFE_RELEASE(m_pDepthTextureFloat4NoSmoothingSRV);
-	SAFE_RELEASE(m_pDepthTextureFloat4NoSmoothingUAV);
+	//SAFE_RELEASE(m_pDepthTextureFloat4NoSmoothing2D);
+	//SAFE_RELEASE(m_pDepthTextureFloat4NoSmoothingSRV);
+	//SAFE_RELEASE(m_pDepthTextureFloat4NoSmoothingUAV);
 
 	SAFE_RELEASE(m_pNormalTextureFloat42D);
 	SAFE_RELEASE(m_pNormalTextureFloat4SRV);
@@ -132,8 +132,8 @@ HRESULT DX11Sensor::OnD3D11CreateDevice( ID3D11Device* device, DepthSensor* dept
 	hr = device->CreateTexture2D(&depthTexDesc, NULL, &m_pDepthTextureFloat42D);
 	if ( FAILED(hr) ) { return hr; }
 
-	hr = device->CreateTexture2D(&depthTexDesc, NULL, &m_pDepthTextureFloat4NoSmoothing2D);
-	if ( FAILED(hr) ) { return hr; }
+	//hr = device->CreateTexture2D(&depthTexDesc, NULL, &m_pDepthTextureFloat4NoSmoothing2D);
+	//if ( FAILED(hr) ) { return hr; }
 
 	hr = device->CreateTexture2D(&depthTexDesc, NULL, &m_pNormalTextureFloat42D);
 	if ( FAILED(hr) ) { return hr; }
@@ -157,8 +157,8 @@ HRESULT DX11Sensor::OnD3D11CreateDevice( ID3D11Device* device, DepthSensor* dept
 	hr = device->CreateShaderResourceView(m_pDepthTextureFloat42D, NULL, &m_pDepthTextureFloat4SRV);
 	if ( FAILED(hr) ) { return hr; }
 
-	hr = device->CreateShaderResourceView(m_pDepthTextureFloat4NoSmoothing2D, NULL, &m_pDepthTextureFloat4NoSmoothingSRV);
-	if ( FAILED(hr) ) { return hr; }
+	//hr = device->CreateShaderResourceView(m_pDepthTextureFloat4NoSmoothing2D, NULL, &m_pDepthTextureFloat4NoSmoothingSRV);
+	//if ( FAILED(hr) ) { return hr; }
 
 	hr = device->CreateShaderResourceView(m_pNormalTextureFloat42D, NULL, &m_pNormalTextureFloat4SRV);
 	if ( FAILED(hr) ) { return hr; }
@@ -177,7 +177,7 @@ HRESULT DX11Sensor::OnD3D11CreateDevice( ID3D11Device* device, DepthSensor* dept
 	if ( FAILED(hr) ) { return hr; }
 
 	V_RETURN(device->CreateUnorderedAccessView(m_pDepthTextureFloat42D, NULL, &m_pDepthTextureFloat4UAV));
-	V_RETURN(device->CreateUnorderedAccessView(m_pDepthTextureFloat4NoSmoothing2D, NULL, &m_pDepthTextureFloat4NoSmoothingUAV));
+	//V_RETURN(device->CreateUnorderedAccessView(m_pDepthTextureFloat4NoSmoothing2D, NULL, &m_pDepthTextureFloat4NoSmoothingUAV));
 	V_RETURN(device->CreateUnorderedAccessView(m_pNormalTextureFloat42D, NULL, &m_pNormalTextureFloat4UAV));
 
 	// Create color texture
@@ -249,7 +249,7 @@ HRESULT DX11Sensor::processDepth( ID3D11DeviceContext* context )	{
 		TimingLog::totalTimeErode += m_timer.getElapsedTimeMS(); TimingLog::countErode++;
 	}		
 
-	DX11ImageHelper::applyCameraSpaceProjection(context, m_pDepthTextureFErodedSRV, m_pDepthTextureFloat4NoSmoothingUAV, GlobalAppState::getInstance().s_windowWidth, GlobalAppState::getInstance().s_windowHeight);
+	//DX11ImageHelper::applyCameraSpaceProjection(context, m_pDepthTextureFErodedSRV, m_pDepthTextureFloat4NoSmoothingUAV, GlobalAppState::getInstance().s_windowWidth, GlobalAppState::getInstance().s_windowHeight);
 
 	if (m_bFilterDepthValues)
 	{

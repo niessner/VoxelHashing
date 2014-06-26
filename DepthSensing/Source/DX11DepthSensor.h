@@ -73,9 +73,9 @@ public:
 		return m_pHSVDepthTextureFloat42D;
 	}
 
-	ID3D11ShaderResourceView* GetDepthFloat4NoSmoothingSRV() {
-		return m_pDepthTextureFloat4NoSmoothingSRV;
-	}
+	//ID3D11ShaderResourceView* GetDepthFloat4NoSmoothingSRV() {
+	//	return m_pDepthTextureFloat4NoSmoothingSRV;
+	//}
 
 	ID3D11ShaderResourceView* GetNormalFloat4SRV() {
 		return m_pNormalTextureFloat4SRV;
@@ -169,10 +169,10 @@ private:
 	ID3D11ShaderResourceView*           m_pDepthTextureFloat4SRV;
 	ID3D11UnorderedAccessView*          m_pDepthTextureFloat4UAV;
 
-	//! camera space points
-	ID3D11Texture2D*					m_pDepthTextureFloat4NoSmoothing2D;
-	ID3D11ShaderResourceView*           m_pDepthTextureFloat4NoSmoothingSRV;
-	ID3D11UnorderedAccessView*          m_pDepthTextureFloat4NoSmoothingUAV;
+	////! camera space points
+	//ID3D11Texture2D*					m_pDepthTextureFloat4NoSmoothing2D;
+	//ID3D11ShaderResourceView*           m_pDepthTextureFloat4NoSmoothingSRV;
+	//ID3D11UnorderedAccessView*          m_pDepthTextureFloat4NoSmoothingUAV;
 
 	//! camera space normals
 	ID3D11Texture2D*					m_pNormalTextureFloat42D;
