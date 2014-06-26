@@ -62,9 +62,9 @@ s_nBitsInT = 32;
 s_WeightSample = 3;
 s_WeightMax = 255;
 
-s_maxIntegrationDistance = 3.0f;
+s_maxIntegrationDistance = 5.0f;
 s_SensorDepthWorldMin = 0.4f;
-s_SensorDepthWorldMax = 4.0f;
+s_SensorDepthWorldMax = 6.0f;
 
 s_Truncation = 0.02f;
 s_TruncScale = 0.01f;
@@ -92,7 +92,7 @@ s_MaxCollisionLinkedListSize = 7;
 
 s_useGradients = false;
 s_enableMultiLayerSplatting = false;
-s_BinaryDumpReaderSourceFile = "DataDump/gates250/2.sensor";
+s_BinaryDumpReaderSourceFile = "DataDump/tango.sensor";
 s_usePreComputedCameraTrajectory = false;
 s_PreComputedCameraTrajectoryPath = "../stanfordData/copyroom_trajectory.log";
 s_DataDumpPath = "DataDump/";
@@ -111,7 +111,7 @@ s_bApplicationEnabled = true;
 
 
 s_RecordData = false;
-s_RecordDataFile = "DataDump/recording.sensor";
+s_RecordDataFile = "DataDump/tango.sensor";
 s_DumpVoxelGridFrames = 0;
 s_DumpVoxelGridFile = "DataDump/sparseVoxelGrid";
 s_DumpAllRendering = false;

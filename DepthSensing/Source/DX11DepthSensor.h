@@ -126,6 +126,9 @@ public:
 		m_depthSensor->saveRecordedPointCloud(filename);
 	}
 
+	mat4f getRigidTransform() const {
+		return m_depthSensor->getRigidTransform();
+	}
 private:
 	unsigned int m_FrameNumberDepth;
 

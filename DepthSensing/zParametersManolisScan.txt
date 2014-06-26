@@ -91,7 +91,7 @@ s_MaxCollisionLinkedListSize = 7;
 
 s_useGradients = false;
 s_enableMultiLayerSplatting = false;
-s_BinaryDumpReaderSourceFile = "../bundle/15-70/dump.sensor";
+s_BinaryDumpReaderSourceFile = "DataDump/tango.sensor";
 s_usePreComputedCameraTrajectory = false;
 s_PreComputedCameraTrajectoryPath = "../bundle/15-70/bundle.log";
 s_DataDumpPath = "DataDump/";

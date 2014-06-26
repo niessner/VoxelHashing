@@ -244,7 +244,7 @@ inline BinaryDataStream<BinaryDataBuffer, BinaryDataCompressor>& operator>>(Bina
 		s >> sensorData.m_ColorImagesTimeStamps;
 		s >> sensorData.m_DepthImagesTimeStamps;
 	}
-	if (sensorData.m_VersionNumber == M_CALIBRATED_SENSOR_DATA_VERSION) {
+	else if (sensorData.m_VersionNumber == M_CALIBRATED_SENSOR_DATA_VERSION) {
 		s >> sensorData.m_SensorName;
 		s >> sensorData.m_DepthNumFrames;
 		s >> sensorData.m_DepthImageWidth;

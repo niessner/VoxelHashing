@@ -592,7 +592,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 	V_RETURN(DX11RayMarchingStepsSplatting::OnD3D11CreateDevice(pd3dDevice));
 
 	V_RETURN(GlobalAppState::getInstance().OnD3D11CreateDevice(pd3dDevice));
-	if(GlobalAppState::getInstance().s_usePreComputedCameraTrajectory) g_TrajectoryLogReader.Init(GlobalAppState::getInstance().s_PreComputedCameraTrajectoryPath);
+	//if(GlobalAppState::getInstance().s_usePreComputedCameraTrajectory) g_TrajectoryLogReader.Init(GlobalAppState::getInstance().s_PreComputedCameraTrajectoryPath);
 
 	return hr;
 }
@@ -935,7 +935,9 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 						GlobalAppState::getInstance().s_Timer.start();
 					}
 					if (GlobalAppState::getInstance().s_usePreComputedCameraTrajectory) {
-						transformation = g_TrajectoryLogReader.getNextTransform();
+						//transformation = g_TrajectoryLogReader.getNextTransform();
+						transformation = g_Sensor.getRigidTransform();	//should map from the current frame to the base frame 
+						std::cout << transformation << std::endl;
 					} else {
 						mat4f deltaEstimate; deltaEstimate.setIdentity();
 						transformation = DX11CameraTrackingMultiRes::applyCT
