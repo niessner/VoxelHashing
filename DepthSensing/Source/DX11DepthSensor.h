@@ -114,6 +114,9 @@ public:
 	void recordFrame() {
 		m_depthSensor->recordFrame();
 	}
+	void recordTrajectory(const mat4f& transformation) {
+		m_depthSensor->recordTrajectory(transformation);
+	}
 	void saveRecordedFramesToFile(const std::string& filename) {
 		m_depthSensor->saveRecordedFramesToFile(filename);
 	}

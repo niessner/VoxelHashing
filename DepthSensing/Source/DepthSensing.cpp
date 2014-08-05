@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-
+#include <iomanip>
 
 #include "DepthSensing.h"
 
@@ -988,6 +988,9 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 					ss << g_Sensor.GetFrameNumberDepth() << ".matrix";
 					std::cout << "Dumping " << ss.str() << std::endl;
 					transformation.saveMatrixToFile(ss.str());
+				}
+				if (GlobalAppState::getInstance().s_RecordData) {
+					g_Sensor.recordTrajectory(transformation);
 				}
 
 				if (GlobalAppState::getInstance().s_timingsDetailledEnabled) {

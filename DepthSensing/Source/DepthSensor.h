@@ -230,6 +230,9 @@ class DepthSensor
 				m_colorRGBX = new BYTE[getColorBytesPerPixel()*m_colorWidth*m_colorHeight];
 			}
 		}
+		void recordTrajectory(const mat4f& transformation) {
+			m_RecordedTrajectory.push_back(transformation);
+		}
 
 		//TODO continue here
 		void saveRecordedFramesToFile(const std::string& filename) {
@@ -265,6 +268,8 @@ class DepthSensor
 				dFrame++;
 			}
 
+			cs.m_trajectory = m_RecordedTrajectory;
+
 			std::cout << cs << std::endl;
 			std::cout << "dumping recorded frames... ";
 			BinaryDataStreamFile outStream(filename, true);
@@ -274,6 +279,7 @@ class DepthSensor
 
 			m_RecordedDepth.clear();
 			m_RecordedColor.clear();
+			m_RecordedTrajectory.clear();
 		}
 
 		//! returns the current rigid transform (if available; designed for binary dump sensor);
@@ -360,5 +366,5 @@ class DepthSensor
 
 		std::list<USHORT*>	m_RecordedDepth;
 		std::list<BYTE*>	m_RecordedColor;
-
+		std::vector<mat4f>	m_RecordedTrajectory;
 };
