@@ -23,7 +23,7 @@ struct CB_VOXEL_HASH_SDF {
 	unsigned int	m_InputImageWidth;
 	unsigned int	m_InputImageHeight;
 	float			m_VirtualVoxelSize;
-	float			m_irtualVoxelResolutionScalar;
+	float			m_VirtualVoxelResolutionScalar;
 	unsigned int	m_NumSDFBlocks;
 	unsigned int	m_NumOccupiedSDFBlocks;
 };

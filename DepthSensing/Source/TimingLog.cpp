@@ -116,6 +116,8 @@ void TimingLog::printTimings()
 		if (countStreamIn != 0)		std::cout << "StreamIn: " << totalTimeStreamIn/countStreamIn << std::endl;
 
 		if (countCompactifyHash != 0) std::cout << "Compactify Hash: " << totalTimeCompactifyHash/countCompactifyHash << std::endl;
+
+		std::cout << std::endl; std::cout << std::endl;
 	}
 
 	if (GlobalAppState::getInstance().s_timingsTotalEnabled) {

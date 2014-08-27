@@ -475,7 +475,7 @@ void DX11SceneRepHashSDF::MapConstantBuffer( ID3D11DeviceContext* context )
 	cbuffer->m_InputImageWidth = GlobalAppState::getInstance().s_windowWidth;
 	cbuffer->m_InputImageHeight = GlobalAppState::getInstance().s_windowHeight;
 	cbuffer->m_VirtualVoxelSize = m_VirtualVoxelSize;
-	cbuffer->m_irtualVoxelResolutionScalar = 1.0f/m_VirtualVoxelSize;
+	cbuffer->m_VirtualVoxelResolutionScalar = 1.0f/m_VirtualVoxelSize;
 	cbuffer->m_NumSDFBlocks = m_SDFNumBlocks;
 	cbuffer->m_NumOccupiedSDFBlocks = m_NumOccupiedHashEntries;
 	context->Unmap(m_SDFVoxelHashCB, 0);
