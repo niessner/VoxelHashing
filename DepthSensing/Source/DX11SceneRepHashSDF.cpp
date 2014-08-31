@@ -385,7 +385,7 @@ void DX11SceneRepHashSDF::Reset( ID3D11DeviceContext* context )
 	context->CSSetConstantBuffers(8, 1, nullCB);
 	context->CSSetShader(0, 0, 0);
 
-	unsigned int initalCount = m_SDFNumBlocks;
+	unsigned int initalCount = m_SDFNumBlocks-1;
 	context->CSSetUnorderedAccessViews( 0, 1, &m_HeapUAV, &initalCount);
 	context->CSSetUnorderedAccessViews(0, 1, nullUAV, 0);
 
@@ -402,7 +402,7 @@ unsigned int DX11SceneRepHashSDF::GetHeapFreeCount( ID3D11DeviceContext* context
 	V(context->Map(m_HeapFreeCount, 0, D3D11_MAP_READ, 0, &mappedResource));
 	unsigned int val =  ((unsigned int*)mappedResource.pData)[0];
 	context->Unmap(m_HeapFreeCount, 0);
-	return val;
+	return val+1;
 }
 
 HRESULT DX11SceneRepHashSDF::DumpPointCloud( const std::string &filename, ID3D11Device* pDevice, ID3D11DeviceContext* pd3dImmediateContext, unsigned int minWeight /*= 1*/, bool justOccupied /*= false*/ )
