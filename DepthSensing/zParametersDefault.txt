@@ -1,11 +1,9 @@
 //DEFAULT PARAMETER FILE
 
-//#ifdef KINECT_ONE
-//// 0 = Kinect, 1 = PrimeSense, 2 = SoftKinect, 3 = BinaryDumpOld, 4 = ImageReader, 5 = KinectOneSensor, 6 = Christoph Sensor, 7 = BinaryDumpReader
-//GlobalAppState::s_sensorIdx = 0;
-//#else
-s_sensorIdx = 0;
-//#endif
+
+// 0 = Kinect, 1 = PrimeSense, 2 = SoftKinect, 3 = BinaryDumpOld, 4 = ImageReader, 5 = KinectOneSensor, 6 = Christoph Sensor, 7 = BinaryDumpReader
+s_sensorIdx = 7;
+
 s_ImageReaderSensorSourcePath = "../stanfordData/copyroom_png/";	//just for image reader sensor, where images are loaded
 s_ImageReaderSensorNumFrames = 0;									//dumps the data after n frames (for every reader)
 
@@ -31,7 +29,7 @@ s_bRenderModeChanged = true;
 s_bFilterKinectInputData = true;
 
 s_bEnableGlobalLocalStreaming = false;
-s_bEnableGarbageCollection = true;
+s_bEnableGarbageCollection = false;
 
 s_hashNumBucketsLocal = 1000000;
 s_hashNumBucketsGlobal = 1337;		// Is not used in the current implementation
@@ -93,8 +91,8 @@ s_MaxCollisionLinkedListSize = 7;
 
 s_useGradients = false;
 s_enableMultiLayerSplatting = false;
-s_BinaryDumpReaderSourceFile = "";
-s_usePreComputedCameraTrajectory = false;
+s_BinaryDumpReaderSourceFile = "DataDump/recording.sensor";
+s_usePreComputedCameraTrajectory = true;
 s_PreComputedCameraTrajectoryPath = "../stanfordData/copyroom_trajectory.log";
 s_DataDumpPath = "DataDump/";
 s_DataDumpDepthData = false;
@@ -110,7 +108,7 @@ s_bRegistrationEnabled = true;
 s_bDisableIntegration = false;
 s_bApplicationEnabled = true;
 
-s_RecordData = false;
+s_RecordData = true;
 s_RecordDataFile = "DataDump/recording.sensor";
 s_DumpVoxelGridFrames = 0;
 s_DumpVoxelGridFile = "DataDump/sparseVoxelGrid";
