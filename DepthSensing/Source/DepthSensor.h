@@ -189,6 +189,8 @@ class DepthSensor
 			m_RecordedDepth.clear();
 			m_RecordedColor.clear();
 
+			m_RecordedTrajectory.clear();
+
 			m_accumulatedPoints.clear();
 		}
 

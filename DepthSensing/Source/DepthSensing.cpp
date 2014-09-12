@@ -937,7 +937,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 					if (GlobalAppState::getInstance().s_usePreComputedCameraTrajectory) {
 						//transformation = g_TrajectoryLogReader.getNextTransform();
 						transformation = g_Sensor.getRigidTransform();	//should map from the current frame to the base frame 
-						std::cout << transformation << std::endl;
+						//std::cout << transformation << std::endl;
 					} else {
 						mat4f deltaEstimate; deltaEstimate.setIdentity();
 						transformation = DX11CameraTrackingMultiRes::applyCT
