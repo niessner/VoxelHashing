@@ -146,6 +146,27 @@ namespace util
 		return trimmed.erase(str.find_last_not_of(" \n\r\t") + 1);
 	}
 
+	inline std::string fileNameFromPath(const std::string &path)
+	{
+		return ml::util::split(ml::util::replace(path, '\\', '/'), '/').back();
+	}
+
+	inline std::string directoryFromPath(const std::string &path)
+	{
+		return replace(path, fileNameFromPath(path), "");
+	}
+
+	inline void makeDirectory(const std::string &directory)
+	{
+		const std::string dir = replace(directory,'\\', '/');
+		const std::vector<std::string> dirParts = split(dir, '/');
+		std::string soFar = "";
+		for (const std::string& part : dirParts) {
+			soFar += part + "/";
+			CreateDirectoryA(soFar.c_str(), nullptr);
+		}
+	}
+
 }  // namespace util
 
 }  // namespace ml

@@ -39,6 +39,9 @@ void DX11MarchingCubesHashSDF::clearMeshBuffer() {
 
 void DX11MarchingCubesHashSDF::saveMesh( const std::string& filename, const mat4f *transform /*= NULL*/ )
 {
+	std::string dir = util::directoryFromPath(filename);
+	if (!util::directoryExists(dir)) util::makeDirectory(dir);
+
 	//create index buffer (required for merging the triangle soup)
 	s_meshData.m_FaceIndicesVertices.resize(s_meshData.m_Vertices.size(), std::vector<unsigned int>(3));
 	for (unsigned int i = 0; i < (unsigned int)s_meshData.m_FaceIndicesVertices.size()/3; i++) {

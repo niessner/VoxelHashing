@@ -237,13 +237,24 @@ namespace util
 	void copyStringToClipboard(const std::string& S);
 	std::string loadStringFromClipboard();
 	int runCommand(const std::string& executablePath, const std::string& commandLine, bool Blocking);
-	void makeDirectory(const std::string& directory);
 	std::string workingDirectory();
+
+	inline bool directoryExists(const std::string& directory) {
+
+		DWORD ftyp = GetFileAttributesA(directory.c_str());
+		if (ftyp == INVALID_FILE_ATTRIBUTES)
+			return false;  //something is wrong with your path!
+
+		if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+			return true;   // this is a directory!
+
+		return false;    // this is not a directory!
+	}
 
 	//
 	// Returns the next line in the given file
 	//
-    std::string fileNameFromPath(const std::string &path);
+
 	std::string getNextLine(std::ifstream& file);
 	std::vector<BYTE> getFileData(const std::string& filename);
 
