@@ -175,17 +175,42 @@ HRESULT KinectSensor::processDepth()
 
 	NUI_DEPTH_IMAGE_PIXEL * pBuffer =  (NUI_DEPTH_IMAGE_PIXEL *) LockedRect.pBits;
 
-//#pragma omp parallel for
-	for (int j = 0; j < (int)getDepthWidth()*(int)getDepthHeight(); j++)	{
-		m_depthD16[j] = pBuffer[j].depth;
-	}
+	USHORT* test = new USHORT[getDepthWidth()*getDepthHeight()];
 
+//#pragma omp parallel for
+	//for (int j = 0; j < (int)getDepthWidth()*(int)getDepthHeight(); j++)	{
+	//	m_depthD16[j] = pBuffer[j].depth;
+	//}
+	for (unsigned int j = 0; j < getDepthHeight(); j++) {
+		for (unsigned int i = 0; i < getDepthWidth(); i++) {
+			unsigned int srcIdx = j*getDepthWidth() + (getDepthWidth() - 1 - i);
+			unsigned int desIdx = j*getDepthWidth() + i;
+
+			const USHORT& d = pBuffer[srcIdx].depth;
+			m_depthD16[desIdx] = d;
+			test[srcIdx] = d * 8;
+		}
+	}
+	 
 	m_bDepthReceived = true;
 
 	hr = pTexture->UnlockRect(0);
 	if ( FAILED(hr) ) { return hr; };
 
 	hr = m_pNuiSensor->NuiImageStreamReleaseFrame(m_pDepthStreamHandle, &imageFrame);
+
+	// Get offset x, y coordinates for color in depth space
+	// This will allow us to later compensate for the differences in location, angle, etc between the depth and color cameras
+	m_pNuiSensor->NuiImageGetColorPixelCoordinateFrameFromDepthPixelFrameAtResolution(
+		cColorResolution,
+		cDepthResolution,
+		getDepthWidth()*getDepthHeight(),
+		test,
+		getDepthWidth()*getDepthHeight()*2,
+		m_colorCoordinates
+		);
+
+	SAFE_DELETE_ARRAY(test);
 
 	return hr;
 }
@@ -212,7 +237,8 @@ HRESULT KinectSensor::processColor()
 		LONG* pDest = ((LONG*)m_colorRGBX) + (int)getColorWidth() * y;
 		for (LONG x = 0; x < (int)getColorWidth(); ++x) {
 			// calculate index into depth array
-			int depthIndex = x/m_colorToDepthDivisor + y/m_colorToDepthDivisor * getDepthWidth();
+			//int depthIndex = x/m_colorToDepthDivisor + y/m_colorToDepthDivisor * getDepthWidth();
+			int depthIndex = (getDepthWidth() - 1 - x/m_colorToDepthDivisor) + y/m_colorToDepthDivisor * getDepthWidth();
 
 			// retrieve the depth to color mapping for the current depth pixel
 			LONG colorInDepthX = m_colorCoordinates[depthIndex * 2];
@@ -243,6 +269,7 @@ HRESULT KinectSensor::processColor()
 	if ( FAILED(hr) ) { return hr; };
 
 	hr = m_pNuiSensor->NuiImageStreamReleaseFrame(m_pColorStreamHandle, &imageFrame);
+
 
 	return hr;
 }

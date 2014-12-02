@@ -272,6 +272,9 @@ class DepthSensor
 
 			cs.m_trajectory = m_RecordedTrajectory;
 
+			std::string dir = util::directoryFromPath(filename);
+			if (!util::directoryExists(dir)) util::makeDirectory(dir);
+
 			std::cout << cs << std::endl;
 			std::cout << "dumping recorded frames... ";
 			BinaryDataStreamFile outStream(filename, true);
