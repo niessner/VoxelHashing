@@ -1,0 +1,50 @@
+//Default Tracking Parameters
+s_maxLevels = 1;
+
+s_maxOuterIter[0] = 8;
+s_maxInnerIter[0] = 1;
+s_distThres[0] = 0.15f;
+s_normalThres[0] = 0.97f;
+s_angleTransThres[0] = 1.0f;// radians
+s_distTransThres[0] = 1.0f; // meters
+s_residualEarlyOut[0] = 0.01f;	//causes an early out if residual is smaller than this number (no early out if set to zero)
+s_weightsDepth[0] = 0.5f;
+s_weightsColor[0] = 0.5f;
+s_colorGradientMin[0] = 0.005f;
+s_colorThres[0] = 0.1f;
+
+s_maxOuterIter[1] = 6;
+s_maxInnerIter[1] = 1;
+s_distThres[1] = 0.15f;
+s_normalThres[1] = 0.97f;
+s_angleTransThres[1] = 1.0f;// radians
+s_distTransThres[1] = 1.0f; // meters
+s_residualEarlyOut[1] = 0.01f;	//causes an early out if residual is smaller than this number (no early out if set to zero)
+s_weightsDepth[1] = 0.5f;
+s_weightsColor[1] = 0.5f;
+s_colorGradientMin[1] = 0.005f;
+s_colorThres[1] = 0.1f;
+
+s_maxOuterIter[2] = 4;
+s_maxInnerIter[2] = 1;
+s_distThres[2] = 0.15f;
+s_normalThres[2] = 0.97f;
+s_angleTransThres[2] = 1.0f;// radians
+s_distTransThres[2] = 1.0f; // meters
+s_residualEarlyOut[2] = 0.01;	//causes an early out if residual is smaller than this number (no early out if set to zero)
+s_weightsDepth[2] = 0.5f;
+s_weightsColor[2] = 0.5f;
+s_colorGradientMin[2] = 0.005f;
+s_colorThres[2] = 0.1f;
+
+s_maxOuterIter[3] = 4;
+s_maxInnerIter[3] = 1;
+s_distThres[3] = 0.15f;
+s_normalThres[3] = 0.97f;
+s_angleTransThres[3] = 1.0f;// radians
+s_distTransThres[3] = 1.0f; // meters
+s_residualEarlyOut[3] = 0.01f;	//causes an early out if residual is smaller than this number (no early out if set to zero)
+s_weightsDepth[3] = 0.5f;
+s_weightsColor[3] = 0.5f;
+s_colorGradientMin[3] = 0.005f;
+s_colorThres[3] = 0.1f;

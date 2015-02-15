@@ -91,7 +91,7 @@ s_MaxCollisionLinkedListSize = 7;
 
 s_useGradients = false;
 s_enableMultiLayerSplatting = false;
-s_BinaryDumpReaderSourceFile = "";
+s_BinaryDumpReaderSourceFile = "../../DepthSensingCUDA/DepthSensing/Dump/recording0.sensor";
 s_usePreComputedCameraTrajectory = false;
 s_PreComputedCameraTrajectoryPath = "../stanfordData/copyroom_trajectory.log";
 s_DataDumpPath = "DataDump/";

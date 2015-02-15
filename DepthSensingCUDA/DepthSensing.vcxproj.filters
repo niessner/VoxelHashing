@@ -1,0 +1,368 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="Source\ScanCS.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CameraUtil.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDAConstant.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDAHistogramHashSDF.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDAHoleFiller.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDAImageHelper.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDARayCastSDF.cu">
+      <Filter>CUDA\RayCastSDF</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDAMarchingCubesSDF.cu">
+      <Filter>CUDA\MarchingCubes</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDABuildLinearSystemRGBD.cu">
+      <Filter>CUDA\CameraTrackingRGBD</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDABuildLinearSystem.cu">
+      <Filter>CUDA\CameraTrackingDepth</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDASceneRepHashSDF.cu">
+      <Filter>CUDA\SceneRep</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Source\CUDASceneRepChunkGrid.cu">
+      <Filter>CUDA\SceneRep</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\DepthSensing.cpp" />
+    <ClCompile Include="Source\GlobalAppState.cpp" />
+    <ClCompile Include="Source\GlobalCameraTrackingState.cpp" />
+    <ClCompile Include="Source\ICPErrorLog.cpp" />
+    <ClCompile Include="Source\NetworkServer.cpp" />
+    <ClCompile Include="Source\stdafx.cpp" />
+    <ClCompile Include="Source\StdOutputLogger.cpp" />
+    <ClCompile Include="Source\TimingLog.cpp" />
+    <ClCompile Include="Source\RGBDSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BinaryDumpReader.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDARGBDAdapter.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDARGBDSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\IntelSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\KinectOneSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\KinectSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NetworkSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PrimeSenseSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RealSenseSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Core\DXUTDevice9.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Core\DXUTDevice11.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Core\DXUTmisc.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Core\DXUT.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Optional\SDKmisc.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Optional\DXUTcamera.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Optional\DXUTgui.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Optional\DXUTres.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Optional\DXUTsettingsdlg.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DXUT\Optional\SDKmesh.cpp">
+      <Filter>DXUT</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDAHistogramHashSDF.cpp">
+      <Filter>CUDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDAHoleFiller.cpp">
+      <Filter>CUDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDAImageHelper.cpp">
+      <Filter>CUDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDAScan.cpp">
+      <Filter>CUDA</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDARayCastSDF.cpp">
+      <Filter>CUDA\RayCastSDF</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDAMarchingCubesHashSDF.cpp">
+      <Filter>CUDA\MarchingCubes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDACameraTrackingMultiResRGBD.cpp">
+      <Filter>CUDA\CameraTrackingRGBD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDABuildLinearSystemRGBD.cpp">
+      <Filter>CUDA\CameraTrackingRGBD</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDACameraTrackingMultiRes.cpp">
+      <Filter>CUDA\CameraTrackingDepth</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDABuildLinearSystem.cpp">
+      <Filter>CUDA\CameraTrackingDepth</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDASceneRepHashSDF.cpp">
+      <Filter>CUDA\SceneRep</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CUDASceneRepChunkGrid.cpp">
+      <Filter>CUDA\SceneRep</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11CustomRenderTarget.cpp">
+      <Filter>DXHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11PhongLighting.cpp">
+      <Filter>DXHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11QuadDrawer.cpp">
+      <Filter>DXHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11RayIntervalSplatting.cpp">
+      <Filter>DXHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11RGBDRenderer.cpp">
+      <Filter>DXHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX11Utils.cpp">
+      <Filter>DXHelper</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\CameraParams.h" />
+    <ClInclude Include="Source\DepthSensing.h" />
+    <ClInclude Include="Source\Eigen.h" />
+    <ClInclude Include="Source\GlobalAppState.h" />
+    <ClInclude Include="Source\GlobalCameraTrackingState.h" />
+    <ClInclude Include="Source\ICPErrorLog.h" />
+    <ClInclude Include="Source\MatrixConversion.h" />
+    <ClInclude Include="Source\mLib.h" />
+    <ClInclude Include="Source\NetworkServer.h" />
+    <ClInclude Include="Source\Resource.h" />
+    <ClInclude Include="Source\stdafx.h" />
+    <ClInclude Include="Source\StdOutputLogger.h" />
+    <ClInclude Include="Source\TimingLog.h" />
+    <ClInclude Include="Source\Util.h" />
+    <ClInclude Include="Source\RealSenseSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\RGBDSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BinaryDumpReader.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDARGBDAdapter.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDARGBDSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\IntelSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\KinectOneSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\KinectSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\NetworkSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PrimeSenseSensor.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Core\DXUTDevice9.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Core\DXUTDevice11.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Core\DXUTmisc.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Core\DXUT.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Optional\SDKmisc.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Optional\DXUTcamera.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Optional\DXUTgui.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Optional\DXUTres.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Optional\DXUTsettingsdlg.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DXUT\Optional\SDKmesh.h">
+      <Filter>DXUT</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Tables.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\VoxelUtilHashSDF.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDAHashParams.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDAHistogramHashSDF.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDAHoleFiller.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDAImageHelper.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDAScan.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DepthCameraUtil.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ICPUtil.h">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDARayCastSDF.h">
+      <Filter>CUDA\RayCastSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDARayCastParams.h">
+      <Filter>CUDA\RayCastSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\RayCastSDFUtil.h">
+      <Filter>CUDA\RayCastSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDAMarchingCubesHashSDF.h">
+      <Filter>CUDA\MarchingCubes</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MarchingCubesSDFUtil.h">
+      <Filter>CUDA\MarchingCubes</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDABuildLinearSystemRGBD.h">
+      <Filter>CUDA\CameraTrackingRGBD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDACameraTrackingMultiResRGBD.h">
+      <Filter>CUDA\CameraTrackingRGBD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CameraTrackingInput.h">
+      <Filter>CUDA\CameraTrackingRGBD</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDABuildLinearSystem.h">
+      <Filter>CUDA\CameraTrackingDepth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDACameraTrackingMultiRes.h">
+      <Filter>CUDA\CameraTrackingDepth</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDASceneRepChunkGrid.h">
+      <Filter>CUDA\SceneRep</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CUDASceneRepHashSDF.h">
+      <Filter>CUDA\SceneRep</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX11CustomRenderTarget.h">
+      <Filter>DXHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX11PhongLighting.h">
+      <Filter>DXHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX11QuadDrawer.h">
+      <Filter>DXHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX11RayIntervalSplatting.h">
+      <Filter>DXHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX11RGBDRenderer.h">
+      <Filter>DXHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX11Utils.h">
+      <Filter>DXHelper</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\QuadDrawer.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\PhongLighting.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RGBDRenderer.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\RayIntervalSplatting.hlsl">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CUDA">
+      <UniqueIdentifier>{acd551f7-0d79-4cb1-8e1a-6272011ec0b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sensors">
+      <UniqueIdentifier>{f348ecae-95ee-4b39-9c88-5e7beeb304e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{b7d5c498-0bd9-4624-b61d-071696bee06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXUT">
+      <UniqueIdentifier>{cf375fb5-0643-4e61-a3a8-02633aa7ddea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA\CameraTrackingDepth">
+      <UniqueIdentifier>{3f50c0ef-1feb-427d-b829-f3600a9ee23f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA\CameraTrackingRGBD">
+      <UniqueIdentifier>{eba3144b-120f-40f3-8af0-0009d4074cff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA\MarchingCubes">
+      <UniqueIdentifier>{030e4a1b-279f-4bc5-9efb-9f1a1a18b337}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA\SceneRep">
+      <UniqueIdentifier>{18e2e9f4-e13b-493a-9401-6098d798d76d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDA\RayCastSDF">
+      <UniqueIdentifier>{8f7de0a7-15fc-48be-b438-828edb03e5c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DXHelper">
+      <UniqueIdentifier>{46397a92-f0b7-4b0f-bbb0-a363517e6c46}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
