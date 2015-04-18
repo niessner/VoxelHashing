@@ -19,4 +19,4 @@ Optional:
 - Kinect SDK (2.0 and above)
 - Prime sense SDK
 
-We are also looking for active participation in this open source effort to make large-scale 3D scanning publically accessible. Please contact us :)
+We are also looking for active participation in this open source effort making large-scale 3D scanning publically accessible. Please contact us :)
