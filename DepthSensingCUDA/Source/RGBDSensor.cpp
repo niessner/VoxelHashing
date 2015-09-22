@@ -244,7 +244,7 @@ void RGBDSensor::recordFrame()
 	m_recordedColorData.push_back(m_colorRGBX);
 
 	m_depthFloat[m_currentRingBufIdx] = new float[getDepthWidth()*getDepthHeight()];
-	m_colorRGBX = new vec4uc[getColorWidth()*getColorWidth()];
+	m_colorRGBX = new vec4uc[getColorWidth()*getColorHeight()];
 }
 
 void RGBDSensor::recordTrajectory(const mat4f& transform)
