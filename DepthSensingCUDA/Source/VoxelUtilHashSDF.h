@@ -217,7 +217,7 @@ struct HashData {
 		return (uint)res;
 	}
 
-	//merges two voxels (v0 is the input voxel, v1 the currently stored voxel)
+	//merges two voxels (v0 the currently stored voxel, v1 is the input voxel)
 	__device__ 
 	void combineVoxel(const Voxel &v0, const Voxel& v1, Voxel &out) const 	{
 
@@ -229,7 +229,8 @@ struct HashData {
 		float3 c0 = make_float3(v0.color.x, v0.color.y, v0.color.z);
 		float3 c1 = make_float3(v1.color.x, v1.color.y, v1.color.z);
 
-		float3 res = (c0+c1)/2;
+		float3 res = 0.5f*c0 + 0.5f*c1;
+		//float3 res = (c0+c1)/2;
 		//float3 res = (c0 * (float)v0.weight + c1 * (float)v1.weight) / ((float)v0.weight + (float)v1.weight);
 		//float3 res = c1;
 

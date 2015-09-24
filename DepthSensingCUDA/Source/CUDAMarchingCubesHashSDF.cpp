@@ -46,17 +46,35 @@ void CUDAMarchingCubesHashSDF::copyTrianglesToCPU() {
 	cpuData.free();
 }
 
+
 void CUDAMarchingCubesHashSDF::saveMesh(const std::string& filename, const mat4f *transform /*= NULL*/)
 {
-	std::string dir = util::directoryFromPath(filename);
-	if (!util::directoryExists(dir)) util::makeDirectory(dir);
+	std::string folder = util::directoryFromPath(filename);
+	if (!util::directoryExists(folder)) {
+		util::makeDirectory(folder);
+	}
+
+	std::string actualFilename = filename;
+	while (util::fileExists(actualFilename)) {
+		std::string path = util::directoryFromPath(actualFilename);
+		std::string curr = util::fileNameFromPath(actualFilename);
+		std::string ext = util::getFileExtension(curr);
+		curr = util::removeExtensions(curr);
+		std::string base = util::getBaseBeforeNumericSuffix(curr);
+		unsigned int num = util::getNumericSuffix(curr);
+		if (num == (unsigned int)-1) {
+			num = 0;
+		}
+		actualFilename = path + base + std::to_string(num + 1) + "." + ext;
+	}
+
 
 	//create index buffer (required for merging the triangle soup)
 	m_meshData.m_FaceIndicesVertices.resize(m_meshData.m_Vertices.size());
-	for (unsigned int i = 0; i < (unsigned int)m_meshData.m_Vertices.size()/3; i++) {
-		m_meshData.m_FaceIndicesVertices[i][0] = 3*i+0;
-		m_meshData.m_FaceIndicesVertices[i][1] = 3*i+1;
-		m_meshData.m_FaceIndicesVertices[i][2] = 3*i+2;
+	for (unsigned int i = 0; i < (unsigned int)m_meshData.m_Vertices.size() / 3; i++) {
+		m_meshData.m_FaceIndicesVertices[i][0] = 3 * i + 0;
+		m_meshData.m_FaceIndicesVertices[i][1] = 3 * i + 1;
+		m_meshData.m_FaceIndicesVertices[i][2] = 3 * i + 2;
 	}
 	std::cout << "size before:\t" << m_meshData.m_Vertices.size() << std::endl;
 
@@ -75,12 +93,12 @@ void CUDAMarchingCubesHashSDF::saveMesh(const std::string& filename, const mat4f
 		m_meshData.applyTransform(*transform);
 	}
 
-	std::cout << "saving mesh (" << filename << ") ...";
-	MeshIOf::saveToFile(filename, m_meshData);
+	std::cout << "saving mesh (" << actualFilename << ") ...";
+	MeshIOf::saveToFile(actualFilename, m_meshData);
 	std::cout << "done!" << std::endl;
 
 	clearMeshBuffer();
-	
+
 }
 
 void CUDAMarchingCubesHashSDF::extractIsoSurface(const HashData& hashData, const HashParams& hashParams, const RayCastData& rayCastData,  const vec3f& minCorner, const vec3f& maxCorner, bool boxEnabled)

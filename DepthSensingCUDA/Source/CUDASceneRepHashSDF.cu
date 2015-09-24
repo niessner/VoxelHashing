@@ -413,9 +413,6 @@ __global__ void integrateDepthMapKernel(HashData hashData, DepthCameraData camer
 					Voxel newVoxel;
 					hashData.combineVoxel(hashData.d_SDFBlocks[idx], curr, newVoxel);
 					hashData.d_SDFBlocks[idx] = newVoxel;
-					//Voxel prev = getVoxel(g_SDFBlocksSDFUAV, g_SDFBlocksRGBWUAV, idx);
-					//Voxel newVoxel = combineVoxel(curr, prev);
-					//setVoxel(g_SDFBlocksSDFUAV, g_SDFBlocksRGBWUAV, idx, newVoxel);
 				}
 			}
 		}

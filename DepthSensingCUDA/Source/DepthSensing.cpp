@@ -661,9 +661,10 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void reconstruction()
 {
 	//only if binary dump
-	if (GlobalAppState::get().s_sensorIdx == 3) 
-		std::cout << "[ frame " << g_RGBDAdapter.getFrameNumber() << " ] " << g_sceneRep->getHashParams().m_numOccupiedBlocks << std::endl;
-	
+	if (GlobalAppState::get().s_sensorIdx == 3) {
+		std::cout << "[ frame " << g_RGBDAdapter.getFrameNumber() << " ] " << " [Free " << g_sceneRep->getHeapFreeCount() << " ] " << std::endl;
+		
+	}
 	//Util::writeToImage(g_RGBDAdapter.getRawDepthMap(), g_RGBDAdapter.getWidth(), g_RGBDAdapter.getHeight(), "test.png");
 
 	mat4f transformation = mat4f::identity();
@@ -697,8 +698,15 @@ void reconstruction()
 			//static ICPErrorLog errorLog;
 			if (!GlobalAppState::get().s_trackingEnabled) {
 				transformation.setIdentity();
-			} else if (GlobalAppState::get().s_binaryDumpSensorUseTrajectory) {
+			} else if (GlobalAppState::get().s_sensorIdx == 3 && GlobalAppState::get().s_binaryDumpSensorUseTrajectory) {
 				transformation = g_RGBDAdapter.getRigidTransform();
+
+				//std::cout << transformation << std::endl;
+ 
+				if (transformation[0] == -std::numeric_limits<float>::infinity()) {
+					std::cout << "INVALID FRAME" << std::endl;
+					return;
+				}
 			} else {
 
 				const bool useRGBDTracking = false;	//Depth vs RGBD
