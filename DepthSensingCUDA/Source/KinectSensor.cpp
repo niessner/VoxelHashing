@@ -264,6 +264,8 @@ HRESULT KinectSensor::processColor()
 				// set source for copy to the color pixel
 				LONG* pSrc = ((LONG *)LockedRect.pBits) + colorIndex;					
 				LONG tmp = *pSrc;
+				vec4uc* bgr = (vec4uc*)&tmp;
+				std::swap(bgr->x, bgr->z);
 
 				tmp|=0xFF000000; // Flag for is valid
 

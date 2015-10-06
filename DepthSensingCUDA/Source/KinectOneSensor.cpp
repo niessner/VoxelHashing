@@ -513,11 +513,11 @@ HRESULT KinectOneSensor::mapColorToDepth()
 						// calculate index into color array
 						const UINT colorIndex = colorX + (colorY * m_inputColorWidth);
 						const RGBQUAD& pixel = m_pColorRGBX[colorIndex];
-						pixelColor |= pixel.rgbBlue;
+						pixelColor |= pixel.rgbRed;
 						pixelColor <<= 8;
 						pixelColor |= pixel.rgbGreen;
 						pixelColor <<= 8;
-						pixelColor |= pixel.rgbRed;
+						pixelColor |= pixel.rgbBlue;
 						pixelColor |= 0xFF000000;
 					}
 				}

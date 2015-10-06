@@ -260,11 +260,11 @@ HRESULT PrimeSenseSensor::readDepthAndColor(float* depthFloat, vec4uc* colorRGBX
 						const openni::RGB888Pixel& pixel = pImage[(y2)*cropW+(cropW - x - 1)];
 
 						unsigned int c = 0;
-						c |= pixel.r;
+						c |= pixel.b;
 						c <<= 8;
 						c |= pixel.g;
 						c <<= 8;
-						c |= pixel.b;
+						c |= pixel.r;
 						c |= 0xFF000000;
 
 						((LONG*)m_colorRGBX)[(cropY+y)*m_colorWidth+(cropX+x)] = c;
@@ -295,11 +295,11 @@ HRESULT PrimeSenseSensor::readDepthAndColor(float* depthFloat, vec4uc* colorRGBX
 					const openni::RGB888Pixel& pixel = pImage[Index1D];
 
 					unsigned int c = 0;
-					c |= pixel.r;
+					c |= pixel.b;
 					c <<= 8;
 					c |= pixel.g;
 					c <<= 8;
-					c |= pixel.b;
+					c |= pixel.r;
 					c |= 0xFF000000;
 
 					((LONG*)colorRGBX)[y*width+x] = c;
