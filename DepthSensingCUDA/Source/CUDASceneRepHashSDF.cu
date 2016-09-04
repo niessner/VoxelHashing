@@ -244,6 +244,7 @@ __global__ void allocKernel(HashData hashData, DepthCameraData cameraData, const
 
 extern "C" void allocCUDA(HashData& hashData, const HashParams& hashParams, const DepthCameraData& depthCameraData, const DepthCameraParams& depthCameraParams, const unsigned int* d_bitMask) 
 {
+
 	const dim3 gridSize((depthCameraParams.m_imageWidth + T_PER_BLOCK - 1)/T_PER_BLOCK, (depthCameraParams.m_imageHeight + T_PER_BLOCK - 1)/T_PER_BLOCK);
 	const dim3 blockSize(T_PER_BLOCK, T_PER_BLOCK);
 
@@ -374,7 +375,8 @@ __global__ void integrateDepthMapKernel(HashData hashData, DepthCameraData camer
 			color = bilinearFilterColor(cameraData.cameraToKinectScreenFloat(pf));
 		}
 
-		if (color.x != MINF && depth != MINF) {	//valid depth and color value
+		if (color.x != MINF && depth != MINF) { // valid depth and color
+		//if (depth != MINF) {	//valid depth
 
 			if (depth < hashParams.m_maxIntegrationDistance) {
 				float depthZeroOne = cameraData.cameraToKinectProjZ(depth);
@@ -411,8 +413,13 @@ __global__ void integrateDepthMapKernel(HashData hashData, DepthCameraData camer
 					uint idx = entry.ptr + i;
 					
 					Voxel newVoxel;
+					//if (color.x == MINF) hashData.combineVoxelDepthOnly(hashData.d_SDFBlocks[idx], curr, newVoxel);
+					//else hashData.combineVoxel(hashData.d_SDFBlocks[idx], curr, newVoxel);
 					hashData.combineVoxel(hashData.d_SDFBlocks[idx], curr, newVoxel);
 					hashData.d_SDFBlocks[idx] = newVoxel;
+					//Voxel prev = getVoxel(g_SDFBlocksSDFUAV, g_SDFBlocksRGBWUAV, idx);
+					//Voxel newVoxel = combineVoxel(curr, prev);
+					//setVoxel(g_SDFBlocksSDFUAV, g_SDFBlocksRGBWUAV, idx, newVoxel);
 				}
 			}
 		}

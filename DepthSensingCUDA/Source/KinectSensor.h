@@ -26,6 +26,10 @@ public:
 	//! maps the color to depth data and copies depth and color data to the GPU
 	HRESULT processColor();
 
+	std::string getSensorName() const {
+		return "Kinect";
+	}
+
 	//! toggles near mode if possible (only available on a windows Kinect)
 	HRESULT toggleNearMode();
 

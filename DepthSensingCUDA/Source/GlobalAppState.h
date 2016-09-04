@@ -1,11 +1,13 @@
 #pragma once
-
+ 
 #define KINECT
 //#define KINECT_ONE
 //#define OPEN_NI
 #define BINARY_DUMP_READER
 //#define INTEL_SENSOR
 //#define REAL_SENSE
+//#define STRUCTURE_SENSOR
+#define SENSOR_DATA_READER
 
 //#define OBJECT_SENSING
 
@@ -47,6 +49,7 @@
 	X(unsigned int, s_SDFIntegrationWeightMax) \
 	X(std::string, s_binaryDumpSensorFile) \
 	X(bool, s_binaryDumpSensorUseTrajectory) \
+	X(bool, s_binaryDumpSensorUseTrajectoryOnlyInit) \
 	X(float, s_depthSigmaD) \
 	X(float, s_depthSigmaR) \
 	X(bool, s_depthFilter) \
@@ -89,6 +92,7 @@
 	X(vec3f, s_streamingPos) \
 	X(unsigned int, s_streamingOutParts) \
 	X(bool, s_recordData) \
+	X(bool, s_recordCompression) \
 	X(std::string, s_recordDataFile) \
 	X(bool, s_reconstructionEnabled)
 
@@ -102,6 +106,18 @@
 class GlobalAppState
 {
 public:
+	enum SENSOR_IDX 
+	{
+		Sensor_Kinect = 0,
+		Sensor_PrimeSense = 1,
+		Sensor_KinectOne = 2,
+		Sensor_BinaryDumpReader = 3,
+		Sensor_NetworkSensor = 4,
+		Sensor_IntelSensor = 5,
+		Sensor_RealSense = 6,
+		Sensor_StructureSensor = 7,
+		Sensor_SensorDataReader = 8
+	};
 
 #define X(type, name) type name;
 	X_GLOBAL_APP_STATE_FIELDS

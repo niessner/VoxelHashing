@@ -161,6 +161,9 @@
     <ClCompile Include="Source\DX11Utils.cpp">
       <Filter>DXHelper</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SensorDataReader.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CameraParams.h" />
@@ -317,6 +320,9 @@
     </ClInclude>
     <ClInclude Include="Source\DX11Utils.h">
       <Filter>DXHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SensorDataReader.h">
+      <Filter>Sensors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

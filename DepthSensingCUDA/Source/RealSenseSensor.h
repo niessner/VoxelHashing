@@ -33,6 +33,10 @@ public:
 	HRESULT processColor() {
 		return S_OK;
 	}
+
+	std::string getSensorName() const {
+		return "RealSense";
+	}
 	
 
 protected:

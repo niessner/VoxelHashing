@@ -3,8 +3,62 @@
 
 #include "NetworkSensor.h"
 
+#include "sensorData/sensorData.h"
 
 
+struct Calibration {
+	unsigned int	m_DepthImageWidth;
+	unsigned int	m_DepthImageHeight;
+	unsigned int	m_ColorImageWidth;
+	unsigned int	m_ColorImageHeight;
+	ml::SensorData::CalibrationData m_CalibrationDepth;
+	ml::SensorData::CalibrationData m_CalibrationColor;
+	bool			m_bUseTrajectory;
+};
+
+
+void NetworkSensor::waitForConnection()
+{
+	m_networkServer.close();
+
+	const unsigned int defaultPort = 1337;
+	std::string client("unknown client");
+
+	std::cout << "waiting for network connection" << std::endl;
+	if (!m_networkServer.open(defaultPort, client)) {
+		throw MLIB_EXCEPTION("could not open network server");
+	}
+	std::cout << "connected to " << client << std::endl;
+
+	PacketHeader packet_header;
+	int byte_size_received = m_networkServer.receiveDataBlocking((BYTE*)(&packet_header), sizeof(PacketHeader));
+	if (byte_size_received != sizeof(PacketHeader)) throw MLIB_EXCEPTION("invalid size reading packet header");
+	if (packet_header.packet_type != PacketType::CLIENT_2_SERVER_CALIBRATION)
+		throw MLIB_EXCEPTION("expecting calibration packet");
+
+	Calibration calibration;
+	byte_size_received = m_networkServer.receiveDataBlocking((BYTE*)(&calibration), sizeof(Calibration));
+	if (byte_size_received != sizeof(Calibration)) throw MLIB_EXCEPTION("invalid size reading parameters");
+	m_bUseTrajectory = calibration.m_bUseTrajectory;
+
+	init(calibration.m_DepthImageWidth, calibration.m_DepthImageHeight, calibration.m_ColorImageWidth, calibration.m_ColorImageHeight);
+	m_depthIntrinsics = calibration.m_CalibrationDepth.m_intrinsic;
+	m_depthIntrinsicsInv = m_depthIntrinsics.getInverse();
+	m_colorIntrinsics = calibration.m_CalibrationDepth.m_intrinsic;
+	m_colorIntrinsicsInv = m_colorIntrinsics.getInverse();
+	initializeDepthExtrinsics(calibration.m_CalibrationDepth.m_extrinsic);
+	initializeColorExtrinsics(calibration.m_CalibrationColor.m_extrinsic);
+
+	std::cout << "depth intrinsics: " << std::endl << m_depthIntrinsics << std::endl;
+	std::cout << "color intrinsics: " << std::endl << m_colorIntrinsics << std::endl;
+	std::cout << "depth extrinsics: " << std::endl << m_depthExtrinsics << std::endl;
+	std::cout << "color extrinsics: " << std::endl << m_colorExtrinsics << std::endl;
+
+	for (unsigned int i = 0; i < getColorWidth()*getColorHeight(); i++) {
+		m_colorRGBX[i] = vec4uc(255, 255, 255, 255);
+	}
+
+}
 
 HRESULT NetworkSensor::processDepth()
 {
@@ -20,6 +74,10 @@ HRESULT NetworkSensor::processDepth()
 		waitForConnection();
 		byte_size_received = m_networkServer.receiveDataBlocking((BYTE*)(&packet_header), sizeof(PacketHeader));
 		if (byte_size_received != sizeof(PacketHeader)) throw MLIB_EXCEPTION("invalid size reading packet header");
+
+		if (packet_type_status == PacketType::SERVER_2_CLIENT_RESET) {
+			packet_type_status = PacketType::SERVER_2_CLIENT_PROCESSED;
+		}
 	}
 
 	if (packet_header.packet_type != PacketType::CLIENT_2_SERVER_FRAME_DATA)
@@ -103,17 +161,19 @@ HRESULT NetworkSensor::processDepth()
 		byte_size_received = m_networkServer.receiveDataBlocking((BYTE*)&m_rigidTransform, packet_header.packet_size);
 		if (byte_size_received != packet_header.packet_size) throw MLIB_EXCEPTION("invalid size reading transformation");
 
-		m_rigidTransform.transpose();
+		//m_rigidTransform.transpose();
+		//std::cout << "NetworkSensor: " <<  m_rigidTransform << std::endl;
 	}
 
 	packet_header.packet_type = packet_type_status;
 	packet_header.packet_size = 0;
 	int byte_size_sent = m_networkServer.sendDataBlocking((BYTE*)(&packet_header), sizeof(PacketHeader));
 	if (byte_size_sent != sizeof(PacketHeader)) throw MLIB_EXCEPTION("invalid size writing packet header");
-	if (packet_type_status == PacketType::SERVER_2_CLIENT_RESET)
+	
+	if (packet_type_status == PacketType::SERVER_2_CLIENT_RESET) {
 		packet_type_status = PacketType::SERVER_2_CLIENT_PROCESSED;
-
-	m_iFrame ++;
+	}
+	m_iFrame++;
 
 	return S_OK;
 }

@@ -33,11 +33,13 @@ __global__ void renderKernel(HashData hashData, RayCastData rayCastData, DepthCa
 		float4 w = rayCastParams.m_viewMatrixInverse * make_float4(camDir, 0.0f);
 		float3 worldDir = normalize(make_float3(w.x, w.y, w.z));
 
-		float minInterval = tex2D(rayMinTextureRef, x, y);
-		float maxInterval = tex2D(rayMaxTextureRef, x, y);
+		////use ray interval splatting
+		//float minInterval = tex2D(rayMinTextureRef, x, y);
+		//float maxInterval = tex2D(rayMaxTextureRef, x, y);
 
-		//float minInterval = rayCastParams.m_minDepth;
-		//float maxInterval = rayCastParams.m_maxDepth;
+		//don't use ray interval splatting
+		float minInterval = rayCastParams.m_minDepth;
+		float maxInterval = rayCastParams.m_maxDepth;
 
 		//if (minInterval == 0 || minInterval == MINF) minInterval = rayCastParams.m_minDepth;
 		//if (maxInterval == 0 || maxInterval == MINF) maxInterval = rayCastParams.m_maxDepth;

@@ -11,7 +11,7 @@ extern "C" void extractIsoSurfaceCUDA(const HashData& hashData,
 										 MarchingCubesData& data);
 
 void CUDAMarchingCubesHashSDF::create(const MarchingCubesParams& params)
-{
+{ 
 	m_params = params;
 	m_data.allocate(m_params);
 
@@ -25,25 +25,26 @@ void CUDAMarchingCubesHashSDF::destroy(void)
 
 void CUDAMarchingCubesHashSDF::copyTrianglesToCPU() {
 
+	//could  be a bit more efficient here; rather than allocating so much memory; just allocate depending on the triangle size;
 	MarchingCubesData cpuData = m_data.copyToCPU();
 
 	unsigned int nTriangles = *cpuData.d_numTriangles;
 
 	//std::cout << "Marching Cubes: #triangles = " << nTriangles << std::endl;
 
-	if (nTriangles == 0) return;
+	if (nTriangles != 0) {
+		unsigned int baseIdx = (unsigned int)m_meshData.m_Vertices.size();
+		m_meshData.m_Vertices.resize(baseIdx + 3 * nTriangles);
+		m_meshData.m_Colors.resize(baseIdx + 3 * nTriangles);
 
-	unsigned int baseIdx = (unsigned int)m_meshData.m_Vertices.size();
-	m_meshData.m_Vertices.resize(baseIdx + 3*nTriangles);
-	m_meshData.m_Colors.resize(baseIdx + 3*nTriangles);
-
-	vec3f* vc = (vec3f*)cpuData.d_triangles;
-	for (unsigned int i = 0; i < 3*nTriangles; i++) {
-		m_meshData.m_Vertices[baseIdx + i] = vc[2*i+0];
-		m_meshData.m_Colors[baseIdx + i] = vec4f(vc[2*i+1]);
+		vec3f* vc = (vec3f*)cpuData.d_triangles;
+		for (unsigned int i = 0; i < 3 * nTriangles; i++) {
+			m_meshData.m_Vertices[baseIdx + i] = vc[2 * i + 0];
+			m_meshData.m_Colors[baseIdx + i] = vec4f(vc[2 * i + 1]);
+		}
 	}
 
-	cpuData.free();
+	cpuData.free(); 
 }
 
 

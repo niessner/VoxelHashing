@@ -20,6 +20,7 @@
 #include "IntelSensor.h"
 #include "RealSenseSensor.h"
 
+
 #include "DXUT.h"
 #include "DXUTcamera.h"
 #include "DXUTgui.h"
@@ -71,6 +72,10 @@
 #pragma comment(lib, "libpxc.lib")
 #pragma comment(lib, "libpxcutils.lib")
 #endif
+#endif
+
+#ifdef STRUCTURE_SENSOR
+#pragma comment(lib, "gdiplus.lib")
 #endif
 
 #ifdef OBJECT_SENSING

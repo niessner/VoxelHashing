@@ -1,5 +1,5 @@
-// 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense 
-s_sensorIdx = 4;
+s_sensorIdx = 4;	// 0 = Kinect; 1 = PrimeSense; 2 = KinectOne; 3 = BinaryDumpReader; 4 = NetworkSensor; 5 = IntelSensor
+
 
 s_windowWidth = 640;		//render window width
 s_windowHeight = 360;		//render window height
@@ -10,37 +10,34 @@ s_adapterHeight = 360;		//input depth gets re-sampled to this height
 s_sensorDepthMax = 3.0f;	//maximum sensor depth in meter
 s_sensorDepthMin = 0.1f;	//minimum sensor depth in meter
 
-// cropping options for PrimeSense & Asus Xtion Pro
-s_enableColorCropping = false;
-s_colorCropX = 320;
-s_colorCropY = 272;
-s_colorCropWidth = 640;
-s_colorCropHeight = 480;
 
-// sdf and hash settings
-s_SDFVoxelSize = 0.010f;				//voxel size in meter
-s_SDFMarchingCubeThreshFactor = 10.0f;	//marching cube thresh: s_SDFMarchingCubeThresh = s_SDFMarchingCubeThreshFactor*s_SDFVoxelSize
-s_SDFTruncation = 0.06f;				//truncation in meter (5.0f*s_SDFVoxelSize )
-s_SDFTruncationScale = 0.02f;			//truncation scale in meter per meter (2.5f*s_SDFVoxelSize )
+s_hashNumBuckets = 400000;
+s_hashBucketSize = 10;
+s_hashNumSDFBlocks = 400000;
+s_hashMaxCollisionLinkedListSize = 7;
+s_SDFBlockSize = 8;
+s_SDFVoxelSize = 0.012f;				//voxel size in meter
+s_SDFMarchingCubeThresh = 0.12f;		//marching cube thresh (10.0f*s_SDFVoxelSize )
+s_SDFTrunaction = 0.06f;				//truncation in meter (5.0f*s_SDFVoxelSize )
+s_SDFTruncationScale = 0.03f;			//truncation scale in meter per meter (2.5f*s_SDFVoxelSize )
 s_SDFMaxIntegrationDistance = 3.0f;		//maximum integration in meter
 s_SDFIntegrationWeightSample = 3;		//weight for an integrated depth value
 s_SDFIntegrationWeightMax = 255;		//maximum integration weight for a voxel
-// s_SDFBlockSize is pound defined (SDF_BLOCK_SIZE)
-// s_hashBucketSize is pound defined (HASH_BUCKET_SIZE)
-s_hashNumBuckets = 400000;				//smaller voxels require more space
-s_hashNumSDFBlocks = 400000;			//smaller voxels require more space
-s_hashMaxCollisionLinkedListSize = 7;
 
 // raycast
-s_SDFRayIncrementFactor = 0.8f;			//(don't touch) s_SDFRayIncrement = s_SDFRayIncrementFactor*s_SDFTrunaction;
-s_SDFRayThresSampleDistFactor = 50.5f;	//(don't touch) s_SDFRayThresSampleDist = s_SDFRayThresSampleDistFactor*s_rayIncrement;
-s_SDFRayThresDistFactor = 50.0f;		//(don't touch) s_SDFRayThresDist = s_SDFRayThresSampleDistFactor*s_rayIncrement;
-s_SDFUseGradients 		= false;		//analytic gradients for rendering
+//s_rayIncrement = 0.8f*s_Truncation;
+//s_thresSampleDist = 50.5f*s_rayIncrement;
+//s_thresDist = 50.5f*s_rayIncrement;
+s_SDFRayIncrement 			= 0.016f;
+s_SDFRayThresSampleDist 	= 0.808f;
+s_SDFRayThresDist 			= 0.808f;
+s_SDFUseGradients 			= true;
 
-s_binaryDumpSensorFile = "Dump/recording.sensor";
+
+//s_binaryDumpSensorFile = "Dump/chess.sensor";
+s_binaryDumpSensorFile = "Dump/recordingT.sensor";
 s_binaryDumpSensorUseTrajectory = false;
 
-// filtering
 s_depthSigmaD = 2.0f;	//bilateral filter sigma domain
 s_depthSigmaR = 0.1f;	//bilateral filter sigma range
 s_depthFilter = false;	//bilateral filter enabled depth
@@ -50,21 +47,31 @@ s_colorSigmaR = 0.08f;	//bilateral filter sigma range
 s_colorFilter = false;	//bilateral filter enabled depth
 
 s_integrationEnabled		= true;
-s_trackingEnabled			= true;
-s_timingsDetailledEnabled   = false;	//enable timing output
-s_timingsTotalEnabled		= false;	//enable timing output
+s_trackingEnabled		= true;
 s_garbageCollectionEnabled	= false;
 s_garbageCollectionStarve	= 15;		//decrement the voxel weight every n'th frame
+s_timingsDetailledEnabled   = false;	//enable timing output
+s_timingsTotalEnabled		= false;	//enable timing output
 
-// rendering
-s_materialShininess 	= 16.0f;
-s_materialAmbient   	= 0.75f 0.65f 0.5f 1.0f;
-s_materialDiffuse 		= 1.0f 0.9f 0.7f 1.0f;
-s_materialSpecular 		= 1.0f 1.0f 1.0f 1.0f;
-s_lightAmbient 			= 0.4f 0.4f 0.4f 1.0f;
-s_lightDiffuse 			= 0.6f 0.52944f 0.4566f 0.6f;
-s_lightSpecular 		= 0.3f 0.3f 0.3f 1.0f;
-s_lightDirection 		= 0.0f -1.0f 2.0f;
+//s_materialAmbient   = 0.0f 0.0f 0.0f 1.0f;
+//s_materialDiffuse   = 1.0f 1.0f 1.0f 1.0f;
+//s_materialSpecular  = 1.0f 1.0f 1.0f 1.0f;
+//s_materialShininess = 30.0f;
+//s_lightAmbient  	= 0.1f 0.1f 0.1f 1.0f;
+//s_lightDiffuse  	= 0.7f 0.7f 0.7f 1.0f;
+//s_lightSpecular		= 0.2f 0.2f 0.2f 1.0f;
+//s_lightDirection	= 0.0f 0.1f 1.0f;
+
+s_materialShininess = 16.0f;
+s_materialAmbient   = 0.75f 0.65f 0.5f 1.0f;
+s_materialDiffuse = 1.0f 0.9f 0.7f 1.0f;
+s_materialSpecular = 1.0f 1.0f 1.0f 1.0f;
+s_lightAmbient = 0.4f 0.4f 0.4f 1.0f;
+s_lightDiffuse = 0.6f 0.52944f 0.4566f 0.6f;
+s_lightSpecular = 0.3f 0.3f 0.3f 1.0f;
+s_lightDirection = 0.0f -1.0f 2.0f;
+
+
 
 s_RenderMode = 1;
 
@@ -79,7 +86,7 @@ s_remappingDepthDiscontinuityThresLin	 = 0.016f;
 
 s_bUseCameraCalibration = false;
 							    
-s_marchingCubesMaxNumTriangles = 2500000; // max buffer size for marching cube
+s_marchingCubesMaxNumTriangles = 2500000; // ! todo
 
 s_streamingEnabled = true;
 s_streamingVoxelExtents = 1.0f 1.0f 1.0f;
@@ -90,7 +97,7 @@ s_streamingRadius = 4.0f; // Depends on DepthMin and DepthMax
 s_streamingPos = 0.0f 0.0f 3.0f 1.0f; // Depends on DepthMin and DepthMax
 s_streamingOutParts = 80;	// number of frames required to sweep through the entire hash
 
-//recording of the input data
+
 s_recordData = true;
 s_recordDataFile = "Dump/recording.sensor";
 s_reconstructionEnabled = true;

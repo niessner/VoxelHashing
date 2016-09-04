@@ -38,6 +38,10 @@ public:
 		return hr;
 	}
 
+	std::string getSensorName() const {
+		return "KinectOne";
+	}
+
 	HRESULT saveDepth(float *p_depth){return S_OK;};
 
 	HRESULT toggleAutoWhiteBalance() {

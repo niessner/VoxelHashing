@@ -30,6 +30,10 @@ public:
 	//! must call process depth before process color, always returns last color frame
 	//! maps the color to depth data
 	HRESULT processColor();
+
+	std::string getSensorName() const {
+		return "IntelSensor";
+	}
 	
 
 private:

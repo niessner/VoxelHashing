@@ -79,6 +79,7 @@ HRESULT BinaryDumpReader::processDepth()
 
 		float* depth = getDepthFloat();
 		memcpy(depth, m_data.m_DepthImages[m_CurrFrame], sizeof(float)*getDepthWidth()*getDepthHeight());
+
 		incrementRingbufIdx();
 
 		if (m_bHasColorData) {

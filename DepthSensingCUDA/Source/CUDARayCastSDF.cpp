@@ -90,7 +90,8 @@ void CUDARayCastSDF::rayIntervalSplatting(const HashData& hashData, const HashPa
 	m_params.m_viewMatrix = MatrixConversion::toCUDA(lastRigidTransform.getInverse());
 	m_params.m_viewMatrixInverse = MatrixConversion::toCUDA(lastRigidTransform);
 
-	//m_data.updateParams(m_params); // !!! debugging
+	m_data.updateParams(m_params); // !!! debugging
 
-	m_rayIntervalSplatting.rayIntervalSplatting(DXUTGetD3D11DeviceContext(), hashData, cameraData, m_data, m_params, m_params.m_numOccupiedSDFBlocks*6);
+	//don't use ray interval splatting (cf CUDARayCastSDF.cu -> line 40
+	//m_rayIntervalSplatting.rayIntervalSplatting(DXUTGetD3D11DeviceContext(), hashData, cameraData, m_data, m_params, m_params.m_numOccupiedSDFBlocks*6);
 }

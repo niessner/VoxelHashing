@@ -2,59 +2,62 @@
 
 
 /************************************************************************/
-/* Reads binary dump data from .sensor files                            */
+/* Reads sensor data files from .sens files                            */
 /************************************************************************/
 
 #include "GlobalAppState.h"
 #include "RGBDSensor.h"
 #include "stdafx.h"
 
-#ifdef BINARY_DUMP_READER
+#ifdef SENSOR_DATA_READER
 
-class BinaryDumpReader : public RGBDSensor
+namespace ml {
+	class SensorData;
+	class RGBDFrameCacheRead;
+}
+
+class SensorDataReader : public RGBDSensor
 {
 public:
 
 	//! Constructor
-	BinaryDumpReader();
+	SensorDataReader();
 
 	//! Destructor; releases allocated ressources
-	~BinaryDumpReader();
+	~SensorDataReader();
 
 	//! initializes the sensor
 	HRESULT createFirstConnected();
 
 	//! reads the next depth frame
 	HRESULT processDepth();
-	
+
 
 	HRESULT processColor()	{
 		//everything done in process depth since order is relevant (color must be read first)
 		return S_OK;
 	}
 
-	std::string getSensorName() const {
-		//return "BinaryDumpReader";
-		return m_data.m_SensorName;
-	}
+	std::string getSensorName() const;
 
-	mat4f getRigidTransform(int offset) const {
-		unsigned int idx = m_CurrFrame - 1 + offset;
-		if (idx >= m_data.m_trajectory.size()) throw MLIB_EXCEPTION("invalid trajectory index " + std::to_string(idx));
-		return m_data.m_trajectory[idx];
-	}
+	mat4f getRigidTransform(int offset) const;
 
+
+	const SensorData* getSensorData() const {
+		return m_sensorData;
+	}
 private:
 	//! deletes all allocated data
 	void releaseData();
 
-	CalibratedSensorData m_data;
+	ml::SensorData* m_sensorData;
+	ml::RGBDFrameCacheRead* m_sensorDataCache;
 
-	unsigned int	m_NumFrames;
-	unsigned int	m_CurrFrame;
+	unsigned int	m_numFrames;
+	unsigned int	m_currFrame;
 	bool			m_bHasColorData;
 
 };
 
 
-#endif
+#endif	//sensor data reader

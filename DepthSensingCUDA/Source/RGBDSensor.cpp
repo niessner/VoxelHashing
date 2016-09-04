@@ -4,6 +4,20 @@
 #include "RGBDSensor.h"
 #include <limits>
 
+#include "GlobalAppState.h"
+#include "SensorDataReader.h"
+#include "sensorData/sensorData.h"
+
+namespace stb {
+	#define STB_IMAGE_IMPLEMENTATION
+#include "SensorData/stb_image.h"
+	#undef STB_IMAGE_IMPLEMENTATION
+
+	#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "SensorData/stb_image_write.h"
+	#undef STB_IMAGE_WRITE_IMPLEMENTATION
+}
+
 RGBDSensor::RGBDSensor()
 {
 	m_depthWidth  = 0;
@@ -16,7 +30,10 @@ RGBDSensor::RGBDSensor()
 
 	m_bNearMode = false;
 
-	m_currentRingBufIdx = 0;
+	m_currentRingBufIdx = 0;	
+
+	m_recordedData = NULL;
+	m_recordedDataCache = NULL;
 }
 
 void RGBDSensor::init(unsigned int depthWidth, unsigned int depthHeight, unsigned int colorWidth, unsigned int colorHeight, unsigned int depthRingBufferSize)
@@ -42,6 +59,7 @@ void RGBDSensor::init(unsigned int depthWidth, unsigned int depthHeight, unsigne
 
 	m_bNearMode = false;
 
+	m_bUseModernSensFilesForRecording = GlobalAppState::get().s_recordCompression;
 }
 
 RGBDSensor::~RGBDSensor()
@@ -141,6 +159,7 @@ void RGBDSensor::initializeDepthIntrinsics(float fovX, float fovY, float centerX
 		0.0f, 0.0f, 0.0f, 1.0f);
 
 	m_depthIntrinsicsInv = m_depthIntrinsics.getInverse();
+	std::cout << m_depthIntrinsics << std::endl;
 }
 
 void RGBDSensor::initializeColorIntrinsics(float fovX, float fovY, float centerX, float centerY)
@@ -209,6 +228,13 @@ void RGBDSensor::reset()
 	}
 	m_recordedTrajectory.clear();
 	m_recordedPoints.clear();
+
+
+	SAFE_DELETE(m_recordedDataCache);
+	if (m_recordedData) {
+		m_recordedData->free();
+		SAFE_DELETE(m_recordedData);
+	}
 }
 
 void RGBDSensor::savePointCloud( const std::string& filename, const mat4f& transform /*= mat4f::identity()*/ ) const
@@ -240,11 +266,61 @@ void RGBDSensor::savePointCloud( const std::string& filename, const mat4f& trans
 
 void RGBDSensor::recordFrame()
 {
-	m_recordedDepthData.push_back(m_depthFloat[m_currentRingBufIdx]);
-	m_recordedColorData.push_back(m_colorRGBX);
+	if (m_bUseModernSensFilesForRecording) {
+		if (!m_recordedData) {
+			m_recordedData = new ml::SensorData;
+			m_recordedData->initDefault(
+				getColorWidth(),
+				getColorHeight(),
+				getDepthWidth(),
+				getDepthHeight(),
+				SensorData::CalibrationData(getColorIntrinsics(), getColorExtrinsics()),
+				SensorData::CalibrationData(getDepthIntrinsics(), getDepthExtrinsics()),
+				SensorData::TYPE_JPEG,
+				SensorData::TYPE_ZLIB_USHORT,
+				1000.0f,
+				getSensorName()
+			);
+			//m_recordedData->m_sensorName = getSensorName();
+			//m_recordedData->m_calibrationColor.m_intrinsic = getColorIntrinsics();
+			//m_recordedData->m_calibrationColor.m_extrinsic = getColorExtrinsics();
+			//m_recordedData->m_calibrationDepth.m_intrinsic = getDepthIntrinsics();
+			//m_recordedData->m_calibrationDepth.m_extrinsic = getDepthExtrinsics();
+			//m_recordedData->m_colorWidth = getColorWidth();
+			//m_recordedData->m_colorHeight = getColorHeight();
+			//m_recordedData->m_depthWidth = getDepthWidth();
+			//m_recordedData->m_depthHeight = getDepthHeight();
+			//m_recordedData->m_depthShift = 1000.0f;
+		}
+		if (!m_recordedDataCache) {
+			const unsigned int cacheSize = 1000;
+			m_recordedDataCache = new ml::RGBDFrameCacheWrite(m_recordedData, cacheSize);
+		}
 
-	m_depthFloat[m_currentRingBufIdx] = new float[getDepthWidth()*getDepthHeight()];
-	m_colorRGBX = new vec4uc[getColorWidth()*getColorHeight()];
+		vec3uc* color = (vec3uc*)std::malloc(sizeof(vec3uc)*getColorWidth()*getColorHeight());
+		unsigned short* depth = (unsigned short*)std::malloc(sizeof(unsigned short)*getDepthWidth()*getDepthHeight());
+		for (unsigned int i = 0; i < getColorWidth()*getColorHeight(); i++) {
+			const auto* c = getColorRGBX();
+			color[i] = vec3uc(c[i].x, c[i].y, c[i].z);
+		}
+		for (unsigned int i = 0; i < getDepthWidth()*getDepthHeight(); i++) {
+			const auto* d = getDepthFloat();
+			depth[i] = (unsigned short)ml::math::round((m_recordedData->m_depthShift * d[i]));
+		}
+		
+		//m_recordedData->m_frames.push_back(SensorData::RGBDFrame(color, getColorWidth(), getColorHeight(), depth, getDepthWidth(), getDepthHeight()));
+		//std::free(color); 
+		//std::free(depth);
+		m_recordedDataCache->writeNextAndFree(color, depth);
+	}
+	else {
+		m_recordedDepthData.push_back(m_depthFloat[m_currentRingBufIdx]);
+		m_recordedColorData.push_back(m_colorRGBX);
+
+		m_depthFloat[m_currentRingBufIdx] = new float[getDepthWidth()*getDepthHeight()];
+		m_colorRGBX = new vec4uc[getColorWidth()*getColorHeight()];
+	}
+
 }
 
 void RGBDSensor::recordTrajectory(const mat4f& transform)
@@ -254,65 +330,116 @@ void RGBDSensor::recordTrajectory(const mat4f& transform)
 
 void RGBDSensor::saveRecordedFramesToFile( const std::string& filename )
 {
-	if (m_recordedDepthData.size() == 0 || m_recordedColorData.size() == 0) return;
+	if (m_bUseModernSensFilesForRecording) {
+		
+		if (!m_recordedDataCache || !m_recordedData) return;
 
-	CalibratedSensorData cs;
-	cs.m_DepthImageWidth = getDepthWidth();
-	cs.m_DepthImageHeight = getDepthHeight();
-	cs.m_ColorImageWidth = getColorWidth();
-	cs.m_ColorImageHeight = getColorHeight();
-	cs.m_DepthNumFrames = (unsigned int)m_recordedDepthData.size();
-	cs.m_ColorNumFrames = (unsigned int)m_recordedColorData.size();
 
-	cs.m_CalibrationDepth.m_Intrinsic = getDepthIntrinsics();
-	cs.m_CalibrationDepth.m_Extrinsic = getDepthExtrinsics();
-	cs.m_CalibrationDepth.m_IntrinsicInverse = cs.m_CalibrationDepth.m_Intrinsic.getInverse();
-	cs.m_CalibrationDepth.m_ExtrinsicInverse = cs.m_CalibrationDepth.m_Extrinsic.getInverse();
+		SAFE_DELETE(m_recordedDataCache);		//forces cache to finish!
 
-	cs.m_CalibrationColor.m_Intrinsic = getColorIntrinsics();
-	cs.m_CalibrationColor.m_Extrinsic = getColorExtrinsics();
-	cs.m_CalibrationColor.m_IntrinsicInverse = cs.m_CalibrationColor.m_Intrinsic.getInverse();
-	cs.m_CalibrationColor.m_ExtrinsicInverse = cs.m_CalibrationColor.m_Extrinsic.getInverse();
+		//setting the trajectory first
+		if (m_recordedData->m_frames.size() != m_recordedTrajectory.size()) throw MLIB_EXCEPTION("num frames and trajectory size doesn't match");
+		for (size_t i = 0; i < m_recordedData->m_frames.size(); i++) {
+			m_recordedData->m_frames[i].setCameraToWorld(m_recordedTrajectory[i]);
+		}		
 
-	cs.m_DepthImages.resize(cs.m_DepthNumFrames);
-	cs.m_ColorImages.resize(cs.m_ColorNumFrames);
-	unsigned int dFrame = 0;
-	for (auto& a : m_recordedDepthData) {
-		cs.m_DepthImages[dFrame] = a;
-		dFrame++;
-	}
-	unsigned int cFrame = 0;
-	for (auto& a : m_recordedColorData) {
-		cs.m_ColorImages[cFrame] = a;
-		cFrame++;
-	}
-
-	cs.m_trajectory = m_recordedTrajectory;
-
-	std::cout << cs << std::endl;
-	std::cout << "dumping recorded frames... ";
-
-	std::string actualFilename = filename;
-	while (util::fileExists(actualFilename)) {
-		std::string path = util::directoryFromPath(actualFilename);
-		std::string curr = util::fileNameFromPath(actualFilename);
-		std::string ext = util::getFileExtension(curr);
-		curr = util::removeExtensions(curr);
-		std::string base = util::getBaseBeforeNumericSuffix(curr);
-		unsigned int num = util::getNumericSuffix(curr);
-		if (num == (unsigned int)-1) {
-			num = 0;
+		//copy IMU and time stamps from the old sensor data
+		if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader) {
+			const SensorData* inputSensor = ((SensorDataReader*)this)->getSensorData();
+			m_recordedData->m_IMUFrames = inputSensor->m_IMUFrames;
+			for (size_t i = 0; i < m_recordedData->m_frames.size(); i++) {
+				m_recordedData->m_frames[i].setTimeStampColor(inputSensor->m_frames[i].getTimeStampColor());
+				m_recordedData->m_frames[i].setTimeStampDepth(inputSensor->m_frames[i].getTimeStampDepth());
+			}
 		}
-		actualFilename = path + base + std::to_string(num+1) + "." + ext;
-	}
-	BinaryDataStreamFile outStream(actualFilename, true);
-	//BinaryDataStreamZLibFile outStream(filename, true);
-	outStream << cs;
-	std::cout << "done" << std::endl;
 
-	m_recordedDepthData.clear();
-	m_recordedColorData.clear();	//destructor of cs frees all allocated data
-	//m_recordedTrajectory.clear();
+		std::cout << *m_recordedData << std::endl;
+		std::cout << "dumping recorded frames ... ";
+
+		std::string actualFilename = filename;
+		while (util::fileExists(actualFilename)) {
+			std::string path = util::directoryFromPath(actualFilename);
+			std::string curr = util::fileNameFromPath(actualFilename);
+			std::string ext = util::getFileExtension(curr);
+			curr = util::removeExtensions(curr);
+			std::string base = util::getBaseBeforeNumericSuffix(curr);
+			unsigned int num = util::getNumericSuffix(curr);
+			if (num == (unsigned int)-1) {
+				num = 0;
+			}
+			actualFilename = path + base + std::to_string(num + 1) + "." + ext;
+		}
+		
+		m_recordedData->saveToFile(actualFilename);
+		std::cout << "DONE!" << std::endl;	
+
+		
+		m_recordedData->free();
+		SAFE_DELETE(m_recordedData);
+
+	}
+	else {
+		if (m_recordedDepthData.size() == 0 || m_recordedColorData.size() == 0) return;
+
+		CalibratedSensorData cs;
+		cs.m_DepthImageWidth = getDepthWidth();
+		cs.m_DepthImageHeight = getDepthHeight();
+		cs.m_ColorImageWidth = getColorWidth();
+		cs.m_ColorImageHeight = getColorHeight();
+		cs.m_DepthNumFrames = (unsigned int)m_recordedDepthData.size();
+		cs.m_ColorNumFrames = (unsigned int)m_recordedColorData.size();
+
+		cs.m_CalibrationDepth.m_Intrinsic = getDepthIntrinsics();
+		cs.m_CalibrationDepth.m_Extrinsic = getDepthExtrinsics();
+		cs.m_CalibrationDepth.m_IntrinsicInverse = cs.m_CalibrationDepth.m_Intrinsic.getInverse();
+		cs.m_CalibrationDepth.m_ExtrinsicInverse = cs.m_CalibrationDepth.m_Extrinsic.getInverse();
+
+		cs.m_CalibrationColor.m_Intrinsic = getColorIntrinsics();
+		cs.m_CalibrationColor.m_Extrinsic = getColorExtrinsics();
+		cs.m_CalibrationColor.m_IntrinsicInverse = cs.m_CalibrationColor.m_Intrinsic.getInverse();
+		cs.m_CalibrationColor.m_ExtrinsicInverse = cs.m_CalibrationColor.m_Extrinsic.getInverse();
+
+		cs.m_DepthImages.resize(cs.m_DepthNumFrames);
+		cs.m_ColorImages.resize(cs.m_ColorNumFrames);
+		unsigned int dFrame = 0;
+		for (auto& a : m_recordedDepthData) {
+			cs.m_DepthImages[dFrame] = a;
+			dFrame++;
+		}
+		unsigned int cFrame = 0;
+		for (auto& a : m_recordedColorData) {
+			cs.m_ColorImages[cFrame] = a;
+			cFrame++;
+		}
+
+		cs.m_trajectory = m_recordedTrajectory;
+
+		std::cout << cs << std::endl;
+		std::cout << "dumping recorded frames... ";
+
+		std::string actualFilename = filename;
+		while (util::fileExists(actualFilename)) {
+			std::string path = util::directoryFromPath(actualFilename);
+			std::string curr = util::fileNameFromPath(actualFilename);
+			std::string ext = util::getFileExtension(curr);
+			curr = util::removeExtensions(curr);
+			std::string base = util::getBaseBeforeNumericSuffix(curr);
+			unsigned int num = util::getNumericSuffix(curr);
+			if (num == (unsigned int)-1) {
+				num = 0;
+			}
+			actualFilename = path + base + std::to_string(num + 1) + "." + ext;
+		}
+		BinaryDataStreamFile outStream(actualFilename, true);
+		//BinaryDataStreamZLibFile outStream(filename, true);
+		outStream << cs;
+		std::cout << "done" << std::endl;
+
+		m_recordedDepthData.clear();
+		m_recordedColorData.clear();	//destructor of cs frees all allocated data
+
+		//m_recordedTrajectory.clear();
+	}
 }
 
 

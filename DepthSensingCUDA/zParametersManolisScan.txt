@@ -1,8 +1,8 @@
-// 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense 
-s_sensorIdx = 0;
+// 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense; 7=StructureSensor; 8=SensorDataReader
+s_sensorIdx = 8;
 
-s_windowWidth = 640;		//render window width
-s_windowHeight = 480;		//render window height
+s_windowWidth = 1280;		//render window width
+s_windowHeight = 960;		//render window height
 
 s_adapterWidth = 320;		//input depth gets re-sampled to this width
 s_adapterHeight = 240;		//input depth gets re-sampled to this height
@@ -37,8 +37,21 @@ s_SDFRayThresSampleDistFactor = 50.5f;	//(don't touch) s_SDFRayThresSampleDist =
 s_SDFRayThresDistFactor = 50.0f;		//(don't touch) s_SDFRayThresDist = s_SDFRayThresSampleDistFactor*s_rayIncrement;
 s_SDFUseGradients 		= false;		//analytic gradients for rendering
 
-s_binaryDumpSensorFile = "Dump/recording.sensor";
-s_binaryDumpSensorUseTrajectory = false;
+//s_binaryDumpSensorFile = "Dump/scenesynth4/additional_gates381_1.sensor";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/bed/bed.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/luke/luke.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/living/mliving.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/kitchen/kitchen.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/FLOOR5/raw/5a/5a.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/FLOOR5/raw/5b/5b.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/copy/copy.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/gates362/gates362_bundling.sens";
+s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/gates381/gates381.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/lounge/lounge.sens";
+//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/manolis/manolis.sens";
+
+s_binaryDumpSensorUseTrajectory = true;
+s_binaryDumpSensorUseTrajectoryOnlyInit = true;	//only valid if prev is true; precomputed traj for ICP, which is run
 
 // filtering
 s_depthSigmaD = 2.0f;	//bilateral filter sigma domain
@@ -82,7 +95,7 @@ s_bUseCameraCalibration = false;
 s_marchingCubesMaxNumTriangles = 2500000; // max buffer size for marching cube
 
 //streaming parameters
-s_streamingEnabled = true;
+s_streamingEnabled = false;
 s_streamingVoxelExtents = 1.0f 1.0f 1.0f;
 s_streamingGridDimensions = 257 257 257; // dimensions have to be odd (number of samples)
 s_streamingMinGridPos = -128 -128 -128;
@@ -92,6 +105,7 @@ s_streamingPos = 0.0f 0.0f 3.0f 1.0f; // Depends on DepthMin and DepthMax
 s_streamingOutParts = 80;	// number of frames required to sweep through the entire hash
 
 //recording of the input data
-s_recordData = true;
-s_recordDataFile = "Dump/recording.sensor";
+s_recordData = true;			// master flag for data recording: enables or disables data recording
+s_recordCompression = true;		//if recoding is enabled; then compression is used (.sens instead of .sensor)
+s_recordDataFile = "Dump/test.sens";
 s_reconstructionEnabled = true;

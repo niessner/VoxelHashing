@@ -95,7 +95,7 @@ public:
 		m_SDFBlocks.clear();
 	}
 
-	bool isStreamedOut() {
+	bool isStreamedOut() const {
 		return m_SDFBlocks.size() > 0;
 	}
 
@@ -229,8 +229,8 @@ public:
 					hashPoints.push_back(posWorld);
 					for (unsigned int l = 0; l < linearBlockSize; l++) {
 						if (blocks[k].data[l].weight > 0 && std::fabsf(blocks[k].data[l].sdf) <= thresh) {
-							vec3i posUI = SDFBlock::delinearizeVoxelIndex(l) + pos;
-							vec3f posWorld = vec3f(posUI*SDF_BLOCK_SIZE)*hashParams.m_virtualVoxelSize;
+							vec3i posUI = SDFBlock::delinearizeVoxelIndex(l) + pos*SDF_BLOCK_SIZE;
+							vec3f posWorld = vec3f(posUI)*hashParams.m_virtualVoxelSize;
 							voxelPoints.push_back(posWorld);
 						}
 					}
@@ -314,7 +314,7 @@ public:
 
 	bool isChunkInSphere(const vec3i& chunk, const vec3f& center, float radius) const {
 		vec3f posWorld = chunkToWorld(chunk);
-		vec3f offset = m_voxelExtends/2.0f;
+		vec3f offset = m_voxelExtents/2.0f;
 
 		for (int x = -1; x<=1; x+=2)	{
 			for (int y = -1; y<=1; y+=2)	{
@@ -352,7 +352,7 @@ public:
 
 	void create(const vec3f& voxelExtends, const vec3i& gridDimensions, const vec3i& minGridPos, unsigned int initialChunkListSize, bool streamingEnabled) {
 
-		m_voxelExtends = voxelExtends;
+		m_voxelExtents = voxelExtends;
 		m_gridDimensions = gridDimensions;
 		m_initialChunkDescListSize = initialChunkListSize;
 
@@ -405,7 +405,7 @@ public:
 	}
 
 	const vec3f& getVoxelExtends() const {
-		return m_voxelExtends;
+		return m_voxelExtents;
 	}
 
 	vec3f getWorldPosChunk(const vec3i& chunk) const {
@@ -440,8 +440,9 @@ public:
 	//	}
 	//}
 
+#define HASH_GRID_VERSION 1
 
-	//! saves the entire state of the mesh to disc (including the GPU part)
+	//! saves the entire state of the hash to disc (including the GPU part)
 	void saveToFile(const std::string& filename, const RayCastData& rayCastData, const vec3f& camPos, float radius) {
 		
 		stopMultiThreading();
@@ -449,6 +450,15 @@ public:
 		streamOutToCPUAll();
 
 		BinaryDataStreamFile outStream(filename, true);
+
+		const GlobalAppState& gas = GlobalAppState::get();
+		outStream << (unsigned int)HASH_GRID_VERSION;
+		outStream << gas.s_SDFVoxelSize;
+		outStream << m_voxelExtents;
+		outStream << m_gridDimensions;
+		outStream << m_minGridPos;
+		outStream << m_maxGridPos;
+		outStream << m_initialChunkDescListSize;
 
 		unsigned int numOccupiedChunks = 0;
 		for (unsigned int i = 0; i < m_grid.size(); i++) {
@@ -482,8 +492,36 @@ public:
 		m_bitMask.reset();
 
 		BinaryDataStreamFile inStream(filename, false);
+
+		//meta data
+		unsigned int hashGridVersion = 0;
+		float voxelSize = 0.0f;
+		vec3f voxelExtents = vec3f(0.0f, 0.0f, 0.0f);
+		vec3i gridDimensions = vec3i(0, 0, 0);
+		vec3i minGridPos = vec3i(0, 0, 0);
+		vec3i maxGridPos = vec3i(0, 0, 0);
+		unsigned int initialChunkListSize = 0;
+
+		inStream >> hashGridVersion;
+		inStream >> voxelSize;
+		inStream >> voxelExtents;
+		inStream >> gridDimensions;
+		inStream >> minGridPos;
+		inStream >> maxGridPos;
+		inStream >> initialChunkListSize;
+		 
+		if (hashGridVersion != (unsigned int)HASH_GRID_VERSION)
+			throw MLIB_EXCEPTION("hashgrid versions don't match - found " + std::to_string(hashGridVersion) + " should be " + std::to_string(HASH_GRID_VERSION));
+
 		unsigned int numOccupiedChunks = 0;
 		inStream >> numOccupiedChunks;
+		
+		if (voxelExtents != m_voxelExtents) throw MLIB_EXCEPTION("voxel extends don't match");
+		if (gridDimensions != m_gridDimensions) throw MLIB_EXCEPTION("grid dimensions don't match");
+		if (minGridPos != m_minGridPos) throw MLIB_EXCEPTION("minGridPos doesn't match");
+		if (maxGridPos != m_maxGridPos) throw MLIB_EXCEPTION("maxGridPos doesn't match");
+		if (initialChunkListSize != m_initialChunkDescListSize) throw MLIB_EXCEPTION("initial chunkListSize doesn't match");
+
 
 		for (unsigned int i = 0; i < numOccupiedChunks; i++) {
 			unsigned int index = 0;
@@ -523,33 +561,33 @@ public:
 	}
 
 	float getChunkRadiusInMeter() const {
-		return m_voxelExtends.length()/2.0f;
+		return m_voxelExtents.length()/2.0f;
 	}
 
 	float getGridRadiusInMeter() const {
-		vec3f minPos = chunkToWorld(m_minGridPos)-m_voxelExtends/2.0f;
-		vec3f maxPos = chunkToWorld(m_maxGridPos)+m_voxelExtends/2.0f;
+		vec3f minPos = chunkToWorld(m_minGridPos)-m_voxelExtents/2.0f;
+		vec3f maxPos = chunkToWorld(m_maxGridPos)+m_voxelExtents/2.0f;
 
 		return (minPos-maxPos).length()/2.0f;
 	}
 
 	vec3f numberOfChunksToMeter(const vec3i& c) const {
-		return vec3f(c.x*m_voxelExtends.x, c.y*m_voxelExtends.y, c.z*m_voxelExtends.z);
+		return vec3f(c.x*m_voxelExtents.x, c.y*m_voxelExtents.y, c.z*m_voxelExtents.z);
 	}
 
 	vec3f meterToNumberOfChunks(float f) const {
-		return vec3f(f/m_voxelExtends.x, f/m_voxelExtends.y, f/m_voxelExtends.z);
+		return vec3f(f/m_voxelExtents.x, f/m_voxelExtents.y, f/m_voxelExtents.z);
 	}
 
 	vec3i meterToNumberOfChunksCeil(float f) const {
-		return vec3i((int)ceil(f/m_voxelExtends.x), (int)ceil(f/m_voxelExtends.y), (int)ceil(f/m_voxelExtends.z));
+		return vec3i((int)ceil(f/m_voxelExtents.x), (int)ceil(f/m_voxelExtents.y), (int)ceil(f/m_voxelExtents.z));
 	}
 
 	vec3i worldToChunks(const vec3f& posWorld) const {
 		vec3f p;
-		p.x = posWorld.x/m_voxelExtends.x;
-		p.y = posWorld.y/m_voxelExtends.y;
-		p.z = posWorld.z/m_voxelExtends.z;
+		p.x = posWorld.x/m_voxelExtents.x;
+		p.y = posWorld.y/m_voxelExtents.y;
+		p.z = posWorld.z/m_voxelExtents.z;
 
 		vec3f s;
 		s.x = (float)math::sign(p.x);
@@ -565,9 +603,9 @@ public:
 
 	vec3f chunkToWorld(const vec3i& posChunk) const	{
 		vec3f res;
-		res.x = posChunk.x*m_voxelExtends.x;
-		res.y = posChunk.y*m_voxelExtends.y;
-		res.z = posChunk.z*m_voxelExtends.z;
+		res.x = posChunk.x*m_voxelExtents.x;
+		res.y = posChunk.y*m_voxelExtents.y;
+		res.z = posChunk.z*m_voxelExtents.z;
 
 		return res;
 	}
@@ -649,7 +687,7 @@ public:
 	// Chunk Grid
 	//-------------------------------------------------------
 
-	vec3f m_voxelExtends;		// extend of the voxels in meters
+	vec3f m_voxelExtents;		// extend of the voxels in meters
 	vec3i m_gridDimensions;	    // number of voxels in each dimension
 
 	vec3i m_minGridPos;

@@ -41,6 +41,10 @@ public:
 		return hr;
 	}
 
+	std::string getSensorName() const {
+		return "PrimeSense";
+	}
+
 	//! Toggles the Kinect to near-mode; default is far mode
 	HRESULT toggleNearMode()
 	{

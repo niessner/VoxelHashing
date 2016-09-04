@@ -85,8 +85,8 @@ class CUDARGBDAdapter
 			return d_depthMapFloat;
 		}
 
-		mat4f getRigidTransform() const {
-			return m_RGBDSensor->getRigidTransform();
+		mat4f getRigidTransform(int offset = 0) const {
+			return m_RGBDSensor->getRigidTransform(offset);
 		}
 
 		//! resets the frame number

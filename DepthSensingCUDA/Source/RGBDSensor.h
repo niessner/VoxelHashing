@@ -7,6 +7,12 @@
 
 #include "mLib.h"
 
+
+namespace ml {
+	class SensorData;
+	class RGBDFrameCacheWrite;
+}
+
 class RGBDSensor
 {
 public:
@@ -28,6 +34,9 @@ public:
 
 	//! Processes the color data
 	virtual HRESULT processColor() = 0;
+
+	//! Returns the sensor name
+	virtual std::string getSensorName() const = 0;
 
 	//! Toggles the near-mode if available
 	virtual HRESULT toggleNearMode();
@@ -86,9 +95,12 @@ public:
 	void saveRecordedFramesToFile(const std::string& filename);
 
 	//! returns the current rigid transform; if not specified by the 'actual' sensor the identiy is returned
-	virtual mat4f getRigidTransform() const {
+	virtual mat4f getRigidTransform(int offset) const {
 		return mat4f::identity();
 	}
+
+	virtual void startReceivingFrames() {}
+	virtual void stopReceivingFrames() {}
 
 protected:
 
@@ -124,9 +136,16 @@ private:
 	vec3f depthToSkeleton(unsigned int ux, unsigned int uy, float depth) const;
 	vec3f getNormal(unsigned int x, unsigned int y) const;
 
+
+	bool m_bUseModernSensFilesForRecording;
+
 	std::list<float*> m_recordedDepthData;
 	std::list<vec4uc*>	m_recordedColorData;
 
 	std::vector<mat4f> m_recordedTrajectory;
 	std::list<PointCloudf> m_recordedPoints;
+
+	//new recording version
+	ml::SensorData* m_recordedData;
+	ml::RGBDFrameCacheWrite* m_recordedDataCache;
 };
