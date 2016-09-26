@@ -183,15 +183,15 @@ HRESULT CUDARGBDSensor::process(ID3D11DeviceContext* context)
 
 	if(GlobalAppState::get().s_bUseCameraCalibration)
 	{	
-		mat4f depthExtInverse = m_RGBDAdapter->getDepthExtrinsicsInv();
-	
+		mat4f depthExt = m_RGBDAdapter->getDepthExtrinsics();
+
 		g_CustomRenderTarget.Clear(context);
 		g_CustomRenderTarget.Bind(context);
-		g_RGBDRenderer.RenderDepthMap(context, 
-										d_depthMapFilteredFloat, m_depthCameraData.d_colorData, m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight(), 
-										m_RGBDAdapter->getDepthIntrinsicsInv(), depthExtInverse, m_RGBDAdapter->getColorIntrinsics(), 
-										g_CustomRenderTarget.getWidth(), g_CustomRenderTarget.getHeight(), 
-										GlobalAppState::get().s_remappingDepthDiscontinuityThresOffset, GlobalAppState::get().s_remappingDepthDiscontinuityThresLin);
+		g_RGBDRenderer.RenderDepthMap(context,
+			d_depthMapFilteredFloat, m_depthCameraData.d_colorData, m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight(),
+			m_RGBDAdapter->getDepthIntrinsicsInv(), depthExt, m_RGBDAdapter->getColorIntrinsics(),
+			g_CustomRenderTarget.getWidth(), g_CustomRenderTarget.getHeight(),
+			GlobalAppState::get().s_remappingDepthDiscontinuityThresOffset, GlobalAppState::get().s_remappingDepthDiscontinuityThresLin);
 		g_CustomRenderTarget.Unbind(context);
 		g_CustomRenderTarget.copyToCuda(m_depthCameraData.d_depthData, 0);
 
