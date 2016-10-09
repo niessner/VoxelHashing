@@ -4,6 +4,8 @@
 /* Kinect Sensor (the old version of a Kinect)                          */
 /************************************************************************/
 
+#ifdef KINECT
+
 #include "RGBDSensor.h"
 #include <NuiApi.h>
 #include <NuiSkeleton.h>
@@ -60,3 +62,4 @@ private:
 	bool			m_bNearMode;
 
 };
+#endif
