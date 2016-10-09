@@ -47,40 +47,35 @@ HRESULT CUDARGBDAdapter::OnD3D11CreateDevice(ID3D11Device* device, RGBDSensor* R
 
 	m_RGBDSensor = RGBDSensor;
 
-	m_width = width;
-	m_height = height;
+	m_width = width;	//adapter width		(everything will be re-sampled to this value)
+	m_height = height;	//adapter height	(everything will be re-sampled to this value)why do
 
 	const unsigned int widthColor  = m_RGBDSensor->getColorWidth();
 	const unsigned int heightColor = m_RGBDSensor->getColorHeight();
-	
+
 	const unsigned int widthDepth  = m_RGBDSensor->getDepthWidth();
 	const unsigned int heightDepth = m_RGBDSensor->getDepthHeight();
 
-	const float scaleWidthColor = (float)width/(float)widthColor;
-	const float scaleHeightColor = (float)height/(float)heightColor;
-	
-	const float scaleWidthDepth = (float)width/(float)widthDepth;
-	const float scaleHeightDepth = (float)height/(float)heightDepth;
-
-	// adapt intrinsics
+	// adapt depth intrinsics
 	m_depthIntrinsics = m_RGBDSensor->getDepthIntrinsics();
-	m_depthIntrinsics._m00 *= scaleWidthDepth;  m_depthIntrinsics._m02 *= scaleWidthDepth;
-	m_depthIntrinsics._m11 *= scaleHeightDepth; m_depthIntrinsics._m12 *= scaleHeightDepth;
+	m_depthIntrinsics._m00 *= (float)width / (float)widthDepth;				//focal length
+	m_depthIntrinsics._m11 *= (float)height / (float)heightDepth;			//focal length
+	m_depthIntrinsics._m02 *= (float)(width-1) / (float)(widthDepth-1);		//principal point
+	m_depthIntrinsics._m12 *= (float)(height-1) / (float)(heightDepth-1);	//principal point
+	m_depthIntrinsicsInv = m_depthIntrinsics.getInverse();
 
-	m_depthIntrinsicsInv = m_RGBDSensor->getDepthIntrinsicsInv();
-	m_depthIntrinsicsInv._m00 /= scaleWidthDepth; m_depthIntrinsicsInv._m11 /= scaleHeightDepth;
-
+	// adapt color intrinsics
 	m_colorIntrinsics = m_RGBDSensor->getColorIntrinsics();
-	m_colorIntrinsics._m00 *= scaleWidthColor;  m_colorIntrinsics._m02 *= scaleWidthColor;
-	m_colorIntrinsics._m11 *= scaleHeightColor; m_colorIntrinsics._m12 *= scaleHeightColor;
+	m_colorIntrinsics._m00 *= (float)width / (float)widthColor;				//focal length
+	m_colorIntrinsics._m11 *= (float)height / (float)heightColor;			//focal length
+	m_colorIntrinsics._m02 *= (float)(width-1) / (float)(widthColor-1);		//principal point
+	m_colorIntrinsics._m12 *= (float)(height-1) / (float)(heightColor-1);	//principal point
+	m_colorIntrinsicsInv = m_colorIntrinsics.getInverse();
 
-	m_colorIntrinsicsInv = m_RGBDSensor->getColorIntrinsicsInv();
-	m_colorIntrinsicsInv._m00 /= scaleWidthColor; m_colorIntrinsicsInv._m11 /= scaleHeightColor;
-
-	// adapt extrinsics
+	// adapt depth extrinsics
 	m_depthExtrinsics	 =  m_RGBDSensor->getDepthExtrinsics();
 	m_depthExtrinsicsInv =  m_RGBDSensor->getDepthExtrinsicsInv();
-
+	// adapt color extrinsics
 	m_colorExtrinsics	 =  m_RGBDSensor->getColorExtrinsics();
 	m_colorExtrinsicsInv =  m_RGBDSensor->getColorExtrinsicsInv();
 

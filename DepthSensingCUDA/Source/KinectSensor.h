@@ -4,6 +4,8 @@
 /* Kinect Sensor (the old version of a Kinect)                          */
 /************************************************************************/
 
+#include "GlobalAppState.h"
+
 #ifdef KINECT
 
 #include "RGBDSensor.h"
