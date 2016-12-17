@@ -1,5 +1,5 @@
 // 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense; 7=StructureSensor; 8=SensorDataReader
-s_sensorIdx = 0;
+s_sensorIdx = 8;
 
 s_windowWidth = 1280;		//render window width
 s_windowHeight = 960;		//render window height
@@ -32,7 +32,8 @@ s_SDFIntegrationWeightMax = 255;		//maximum integration weight for a voxel
 // s_SDFBlockSize is pound defined (SDF_BLOCK_SIZE)
 // s_hashBucketSize is pound defined (HASH_BUCKET_SIZE)
 s_hashNumBuckets = 500000;				//smaller voxels require more space
-s_hashNumSDFBlocks = 262144;//100000;	//smaller voxels require more space
+//s_hashNumSDFBlocks = 262144;//100000;	
+s_hashNumSDFBlocks = 1000000; //smaller voxels require more space
 s_hashMaxCollisionLinkedListSize = 7;
 
 // raycast
@@ -41,9 +42,9 @@ s_SDFRayThresSampleDistFactor = 50.5f;	//(don't touch) s_SDFRayThresSampleDist =
 s_SDFRayThresDistFactor = 50.0f;		//(don't touch) s_SDFRayThresDist = s_SDFRayThresSampleDistFactor*s_rayIncrement;
 s_SDFUseGradients 		= false;		//analytic gradients for rendering
 
-s_binaryDumpSensorFile = "./DumpOutput/test.sens";
+s_binaryDumpSensorFile = "./DumpOutput/2016-09-07_11-04-18__7367F378-B19D-418F-A88C-1535FFDF8036.sens";
 
-s_binaryDumpSensorUseTrajectory = true;
+s_binaryDumpSensorUseTrajectory = false;
 s_binaryDumpSensorUseTrajectoryOnlyInit = false;	//only valid if prev is true; precomputed traj for ICP, which is run
 
 // filtering
