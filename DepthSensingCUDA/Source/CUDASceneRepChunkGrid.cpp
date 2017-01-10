@@ -3,8 +3,9 @@
 
 #include "CUDASceneRepChunkGrid.h"
 
-LONG WINAPI StreamingFunc(LPVOID lParam) 
-{
+static const bool s_useParts = false;
+
+LONG WINAPI StreamingFunc(LPVOID lParam) {
 	CUDASceneRepChunkGrid* chunkGrid = (CUDASceneRepChunkGrid*)lParam;
 
 	while (true)	{
@@ -12,8 +13,7 @@ LONG WINAPI StreamingFunc(LPVOID lParam)
 		HRESULT hr = S_OK;
 
 		chunkGrid->streamOutToCPUPass1CPU(true);
-		chunkGrid->streamInToGPUPass0CPU(chunkGrid->getPosCamera(), chunkGrid->getRadius(), true);
-
+		chunkGrid->streamInToGPUPass0CPU(chunkGrid->getPosCamera(), chunkGrid->getRadius(), s_useParts);
 
 		if (chunkGrid->getTerminatedThread()) {
 			return 0;
@@ -30,8 +30,7 @@ void CUDASceneRepChunkGrid::streamOutToCPUAll()
 		nStreamedBlocksSum = 0;
 		for (unsigned int i = 0; i < m_streamOutParts; i++) {
 			unsigned int nStreamedBlocks = 0;
-			streamOutToCPU(worldToChunks(m_minGridPos-vec3i(1, 1, 1)), 0.0f, true, nStreamedBlocks);
-
+			streamOutToCPU(worldToChunks(m_minGridPos - vec3i(1, 1, 1)), 0.0f, s_useParts, nStreamedBlocks);
 			nStreamedBlocksSum += nStreamedBlocks;
 		}
 	}
@@ -152,7 +151,7 @@ void CUDASceneRepChunkGrid::streamInToGPUAll()
 {
 	unsigned int nStreamedBlocks = 1;
 	while (nStreamedBlocks != 0) {
-		streamInToGPU(getChunkCenter(vec3i(0, 0, 0)), 1.1f*getGridRadiusInMeter(), true, nStreamedBlocks);
+		streamInToGPU(getChunkCenter(vec3i(0, 0, 0)), 1.1f*getGridRadiusInMeter(), s_useParts, nStreamedBlocks);
 	}
 }
 
@@ -182,9 +181,9 @@ void CUDASceneRepChunkGrid::streamInToGPUChunkNeighborhood(const vec3i& chunkPos
 	vec3i startChunk = vec3i(std::max(chunkPos.x-kernelRadius, m_minGridPos.x), std::max(chunkPos.y-kernelRadius, m_minGridPos.y), std::max(chunkPos.z-kernelRadius, m_minGridPos.z));
 	vec3i endChunk = vec3i(std::min(chunkPos.x+kernelRadius, m_maxGridPos.x), std::min(chunkPos.y+kernelRadius, m_maxGridPos.y), std::min(chunkPos.z+kernelRadius, m_maxGridPos.z));
 
-	for (int x = startChunk.x; x<endChunk.x; x++) {
-		for (int y = startChunk.y; y<endChunk.y; y++) {
-			for (int z = startChunk.z; z<endChunk.z; z++) {
+	for (int x = startChunk.x; x < endChunk.x; x++) {
+		for (int y = startChunk.y; y < endChunk.y; y++) {
+			for (int z = startChunk.z; z < endChunk.z; z++) {
 				streamInToGPUChunk(vec3i(x, y, z));
 			}
 		}

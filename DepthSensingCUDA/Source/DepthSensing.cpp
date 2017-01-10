@@ -950,7 +950,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 
 	// for scannet
 	if (!GlobalAppState::get().s_playData) {
-		StopScanningAndExtractIsoSurfaceMC(util::removeExtensions(GlobalAppState::get().s_binaryDumpSensorFile) + "_vh.ply", true);
+		StopScanningAndExtractIsoSurfaceMC(util::removeExtensions(GlobalAppState::get().s_binaryDumpSensorFile[0]) + "_vh.ply", true);
 		exit(0);
 	}
 
@@ -987,7 +987,6 @@ int main(int argc, char** argv)
 		else {
 			std::cout << "usage: DepthSensing [fileNameDescGlobalApp] [fileNameDescGlobalTracking]" << std::endl;
 			//fileNameDescGlobalApp = "zParametersDefault.txt";
-			//fileNameDescGlobalApp = "zParametersTango.txt";
 			fileNameDescGlobalApp = "zParametersManolisScan.txt";
 			fileNameDescGlobalTracking = "zParametersTrackingDefault.txt";
 		}
@@ -998,17 +997,22 @@ int main(int argc, char** argv)
 		//Read the global app state
 		ParameterFile parameterFileGlobalApp(fileNameDescGlobalApp);
 		std::ofstream out;
-		if (argc == 4) //for scan net: overwrite .sens file
+		if (argc >= 4) //for scan net: overwrite .sens file
 		{
-			const std::string filename = std::string(argv[3]);
-			parameterFileGlobalApp.overrideParameter("s_binaryDumpSensorFile", filename);
-			std::cout << "Overwriting s_binaryDumpSensorFile; now set to " << filename << std::endl;
+			for (unsigned int i = 0; i < (unsigned int)argc - 3; i++) {
+				const std::string filename = std::string(argv[i+3]);
+				const std::string paramName = "s_binaryDumpSensorFile[" + std::to_string(i) + "]";
+				parameterFileGlobalApp.overrideParameter(paramName, filename);
+				std::cout << "Overwriting s_binaryDumpSensorFile; now set to " << filename << std::endl;
 
-			//redirect stdout to file
-			out.open(util::removeExtensions(filename) + ".voxelhashing.log");
-			if (!out.is_open()) throw MLIB_EXCEPTION("unable to open log file " + util::removeExtensions(filename) + ".voxelhashing.log");
-			//std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-			std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+				if (i == 0) {
+					//redirect stdout to file
+					out.open(util::removeExtensions(filename) + ".voxelhashing.log");
+					if (!out.is_open()) throw MLIB_EXCEPTION("unable to open log file " + util::removeExtensions(filename) + ".voxelhashing.log");
+					//std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+					std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+				}
+			}
 		}
 		GlobalAppState::getInstance().readMembers(parameterFileGlobalApp);
 		//GlobalAppState::getInstance().print();
