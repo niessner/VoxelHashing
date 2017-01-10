@@ -119,4 +119,4 @@ void RenderHelp();
 
 RGBDSensor* getRGBDSensor();
 void ResetDepthSensing();
-void StopScanningAndExtractIsoSurfaceMC(const std::string& filename = "./Scans/scan.ply");
+void StopScanningAndExtractIsoSurfaceMC(const std::string& filename = "./Scans/scan.ply", bool overwriteExistingFile = false);
