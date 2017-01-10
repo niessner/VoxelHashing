@@ -47,7 +47,7 @@
 	X(float, s_SDFMaxIntegrationDistance) \
 	X(unsigned int, s_SDFIntegrationWeightSample) \
 	X(unsigned int, s_SDFIntegrationWeightMax) \
-	X(std::string, s_binaryDumpSensorFile) \
+	X(std::vector<std::string>, s_binaryDumpSensorFile) \
 	X(bool, s_binaryDumpSensorUseTrajectory) \
 	X(bool, s_binaryDumpSensorUseTrajectoryOnlyInit) \
 	X(float, s_depthSigmaD) \

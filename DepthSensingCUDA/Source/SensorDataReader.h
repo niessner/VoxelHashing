@@ -57,6 +57,8 @@ private:
 	unsigned int	m_currFrame;
 	bool			m_bHasColorData;
 
+	unsigned int	m_currSensFileIdx;
+
 };
 
 

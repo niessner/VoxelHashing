@@ -7,7 +7,7 @@ s_windowHeight = 960;		//render window height
 s_adapterWidth = 320;		//input depth gets re-sampled to this width
 s_adapterHeight = 240;		//input depth gets re-sampled to this height
 
-s_sensorDepthMax = 4.0f;	//maximum sensor depth in meter
+s_sensorDepthMax = 6.0f;	//maximum sensor depth in meter
 s_sensorDepthMin = 0.4f;	//minimum sensor depth in meter
 
 // cropping options for PrimeSense & Asus Xtion Pro
@@ -22,13 +22,13 @@ s_SDFVoxelSize = 0.010f;				//voxel size in meter
 s_SDFMarchingCubeThreshFactor = 10.0f;	//marching cube thresh: s_SDFMarchingCubeThresh = s_SDFMarchingCubeThreshFactor*s_SDFVoxelSize
 s_SDFTruncation = 0.06f;				//truncation in meter (5.0f*s_SDFVoxelSize )
 s_SDFTruncationScale = 0.02f;			//truncation scale in meter per meter (2.5f*s_SDFVoxelSize )
-s_SDFMaxIntegrationDistance = 3.0f;		//maximum integration in meter
+s_SDFMaxIntegrationDistance = 6.0f;		//maximum integration in meter
 s_SDFIntegrationWeightSample = 3;		//weight for an integrated depth value
 s_SDFIntegrationWeightMax = 255;		//maximum integration weight for a voxel
 // s_SDFBlockSize is pound defined (SDF_BLOCK_SIZE)
 // s_hashBucketSize is pound defined (HASH_BUCKET_SIZE)
-s_hashNumBuckets = 400000;				//smaller voxels require more space
-s_hashNumSDFBlocks = 400000;			//smaller voxels require more space
+s_hashNumBuckets = 600000;				//smaller voxels require more space
+s_hashNumSDFBlocks = 600000;			//smaller voxels require more space
 s_hashMaxCollisionLinkedListSize = 7;
 
 // raycast
@@ -37,21 +37,13 @@ s_SDFRayThresSampleDistFactor = 50.5f;	//(don't touch) s_SDFRayThresSampleDist =
 s_SDFRayThresDistFactor = 50.0f;		//(don't touch) s_SDFRayThresDist = s_SDFRayThresSampleDistFactor*s_rayIncrement;
 s_SDFUseGradients 		= false;		//analytic gradients for rendering
 
-//s_binaryDumpSensorFile = "Dump/scenesynth4/additional_gates381_1.sensor";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/bed/bed.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/luke/luke.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/living/mliving.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/APTM/raw/kitchen/kitchen.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/FLOOR5/raw/5a/5a.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/FLOOR5/raw/5b/5b.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/copy/copy.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/gates362/gates362_bundling.sens";
-s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/gates381/gates381.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/lounge/lounge.sens";
-//s_binaryDumpSensorFile = "E:/Work/Relocalization/data/STRUCTURE/GATES/raw/manolis/manolis.sens";
+// .sens file input for offline processing (need to set s_sensorIdx accordingly)
+s_binaryDumpSensorFile[0] = "E:/Work/test_0.sens";
+s_binaryDumpSensorFile[1] = "E:/Work/test_1.sens";
+s_binaryDumpSensorFile[2] = "E:/Work/test_2.sens";
 
 s_binaryDumpSensorUseTrajectory = true;
-s_binaryDumpSensorUseTrajectoryOnlyInit = true;	//only valid if prev is true; precomputed traj for ICP, which is run
+s_binaryDumpSensorUseTrajectoryOnlyInit = false;	//only valid if prev is true; precomputed traj for ICP, which is run
 
 // filtering
 s_depthSigmaD = 2.0f;	//bilateral filter sigma domain
@@ -92,20 +84,20 @@ s_remappingDepthDiscontinuityThresLin	 = 0.016f;
 
 s_bUseCameraCalibration = false;
 							    
-s_marchingCubesMaxNumTriangles = 2500000; // max buffer size for marching cube
+s_marchingCubesMaxNumTriangles = 25000000; // max buffer size for marching cube
 
 //streaming parameters
 s_streamingEnabled = false;
-s_streamingVoxelExtents = 1.0f 1.0f 1.0f;
-s_streamingGridDimensions = 257 257 257; // dimensions have to be odd (number of samples)
-s_streamingMinGridPos = -128 -128 -128;
+s_streamingVoxelExtents = 2.0f 2.0f 2.0f;
+s_streamingGridDimensions = 513 513 513; // dimensions have to be odd (number of samples)
+s_streamingMinGridPos = -256 -256 -256;
 s_streamingInitialChunkListSize = 2000;
-s_streamingRadius = 4.0f; // Depends on DepthMin and DepthMax 
+s_streamingRadius = 7.0f; // Depends on DepthMin and DepthMax 
 s_streamingPos = 0.0f 0.0f 3.0f 1.0f; // Depends on DepthMin and DepthMax
 s_streamingOutParts = 80;	// number of frames required to sweep through the entire hash
 
 //recording of the input data
-s_recordData = true;			// master flag for data recording: enables or disables data recording
+s_recordData = false;			// master flag for data recording: enables or disables data recording
 s_recordCompression = true;		//if recoding is enabled; then compression is used (.sens instead of .sensor)
 s_recordDataFile = "Dump/test.sens";
 s_reconstructionEnabled = true;

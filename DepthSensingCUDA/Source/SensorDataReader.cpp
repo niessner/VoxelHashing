@@ -27,6 +27,8 @@ SensorDataReader::SensorDataReader()
 
 	m_sensorData = NULL;
 	m_sensorDataCache = NULL;
+
+	m_currSensFileIdx = 0;
 }
 
 SensorDataReader::~SensorDataReader()
@@ -39,7 +41,8 @@ HRESULT SensorDataReader::createFirstConnected()
 {
 	releaseData();
 
-	std::string filename = GlobalAppState::get().s_binaryDumpSensorFile;
+	if (GlobalAppState::get().s_binaryDumpSensorFile.size() <= m_currSensFileIdx) throw MLIB_EXCEPTION("need to specify s_binaryDumpSensorFile[" + std::to_string(m_currSensFileIdx) + "]");
+	std::string filename = GlobalAppState::get().s_binaryDumpSensorFile[m_currSensFileIdx];
 
 	std::cout << "Start loading binary dump... ";
 	m_sensorData = new SensorData;
@@ -77,9 +80,16 @@ HRESULT SensorDataReader::processDepth()
 {
 	if (m_currFrame >= m_numFrames)
 	{
-		GlobalAppState::get().s_playData = false;
-		std::cout << "binary dump sequence complete - press space to run again" << std::endl;
-		m_currFrame = 0;
+		if (m_currSensFileIdx + 1 < GlobalAppState::get().s_binaryDumpSensorFile.size()) {
+			m_currSensFileIdx++;
+			createFirstConnected();
+			//in case we have more .sens files specified
+		}
+		else {
+			GlobalAppState::get().s_playData = false;
+			std::cout << "binary dump sequence complete - press space to run again" << std::endl;
+			m_currFrame = 0;
+		}
 	}
 
 	if (GlobalAppState::get().s_playData) {

@@ -34,7 +34,8 @@ HRESULT BinaryDumpReader::createFirstConnected()
 {
 	releaseData();
 
-	std::string filename = GlobalAppState::get().s_binaryDumpSensorFile;
+	if (GlobalAppState::get().s_binaryDumpSensorFile.size() == 0) throw MLIB_EXCEPTION("need to specific s_binaryDumpSensorFile[0]");
+	std::string filename = GlobalAppState::get().s_binaryDumpSensorFile[0];
 
 	std::cout << "Start loading binary dump" << std::endl;
 	//BinaryDataStreamZLibFile inputStream(filename, false);
