@@ -246,8 +246,24 @@ private:
 		//Start Timing
 		if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.start(); }
 
-		resetHashBucketMutexCUDA(m_hashData, m_hashParams);
-		allocCUDA(m_hashData, m_hashParams, depthCameraData, depthCameraParams, d_bitMask);
+		//resetHashBucketMutexCUDA(m_hashData, m_hashParams);
+		//allocCUDA(m_hashData, m_hashParams, depthCameraData, depthCameraParams, d_bitMask);
+
+		//allocate until all blocks are allocated
+		unsigned int prevFree = getHeapFreeCount();
+		while (1) {
+			resetHashBucketMutexCUDA(m_hashData, m_hashParams);
+			allocCUDA(m_hashData, m_hashParams, depthCameraData, depthCameraParams, d_bitMask);
+
+			unsigned int currFree = getHeapFreeCount();
+
+			if (prevFree != currFree) {
+				prevFree = currFree;
+			}
+			else {
+				break;
+			}
+		}
 
 		// Stop Timing
 		if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.stop(); TimingLog::totalTimeAlloc += m_timer.getElapsedTimeMS(); TimingLog::countTimeAlloc++; }
