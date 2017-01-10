@@ -357,7 +357,7 @@ public:
 		m_initialChunkDescListSize = initialChunkListSize;
 
 		m_minGridPos = minGridPos;
-		m_maxGridPos = -m_minGridPos;
+		m_maxGridPos = minGridPos + gridDimensions;
 
 		m_grid.resize(m_gridDimensions.x*m_gridDimensions.y*m_gridDimensions.z, NULL);
 
