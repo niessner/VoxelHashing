@@ -3,7 +3,7 @@
 
 #include "CUDASceneRepChunkGrid.h"
 
-static const bool s_useParts = false;
+static const bool s_useParts = true;
 
 LONG WINAPI StreamingFunc(LPVOID lParam) {
 	CUDASceneRepChunkGrid* chunkGrid = (CUDASceneRepChunkGrid*)lParam;
