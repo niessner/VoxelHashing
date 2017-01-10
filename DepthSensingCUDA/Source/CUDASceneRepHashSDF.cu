@@ -371,8 +371,8 @@ __global__ void integrateDepthMapKernel(HashData hashData, DepthCameraData camer
 		float depth = tex2D(depthTextureRef, screenPos.x, screenPos.y);
 		float4 color  = make_float4(MINF, MINF, MINF, MINF);
 		if (cameraData.d_colorData) {
-			//color = tex2D(colorTextureRef, screenPos.x, screenPos.y);
-			color = bilinearFilterColor(cameraData.cameraToKinectScreenFloat(pf));
+			color = tex2D(colorTextureRef, screenPos.x, screenPos.y);
+			//color = bilinearFilterColor(cameraData.cameraToKinectScreenFloat(pf));
 		}
 
 		if (color.x != MINF && depth != MINF) { // valid depth and color

@@ -3,6 +3,8 @@
 
 #include "KinectSensor.h"
 
+#ifdef KINECT
+
 KinectSensor::KinectSensor()
 {
 	// get resolution as DWORDS, but store as LONGs to avoid casts later
@@ -352,3 +354,5 @@ HRESULT KinectSensor::toggleAutoWhiteBalance()
 
 	return hr;
 }
+
+#endif

@@ -5,6 +5,22 @@
 
 namespace Util
 {
+	static void getMemoryUseMB(size_t& mem_total, size_t& mem_free, size_t& mem_used) {
+		cudaMemGetInfo(&mem_free, &mem_total);
+		mem_free /= (1024 * 1024);
+		mem_total /= (1024 * 1024);
+		mem_used = mem_total - mem_free;
+	}
+	static void printMemoryUseMB(const std::string& header = "") {
+		size_t mem_total, mem_free, mem_used;
+		getMemoryUseMB(mem_total, mem_free, mem_used);
+		if (!header.empty()) std::cout << "[ " << header << " ]" << std::endl;
+		std::cout << "\tmem used  = " << mem_used << std::endl;
+		std::cout << "\tmem free  = " << mem_free << std::endl;
+		std::cout << "\tmem total = " << mem_total << std::endl;
+		std::cout << std::endl;
+	}
+
 	static void writeToImage(float* d_buffer, unsigned int width, unsigned int height, const std::string& filename) {
 		//bool minfInvalid = false;
 

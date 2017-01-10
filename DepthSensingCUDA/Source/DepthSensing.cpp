@@ -231,7 +231,7 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 }
 
 
-void StopScanningAndExtractIsoSurfaceMC(const std::string& filename)
+void StopScanningAndExtractIsoSurfaceMC(const std::string& filename, bool overwriteExistingFile /*= false*/)
 {
 	//g_sceneRep->debugHash();
 	//g_chunkGrid->debugCheckForDuplicates();
@@ -257,8 +257,8 @@ void StopScanningAndExtractIsoSurfaceMC(const std::string& filename)
 		g_marchingCubesHashSDF->extractIsoSurface(*g_chunkGrid, g_rayCast->getRayCastData(), p, GlobalAppState::getInstance().s_streamingRadius);
 	}
 
-	const mat4f& rigidTransform = mat4f::identity();//g_sceneRep->getLastRigidTransform();
-	g_marchingCubesHashSDF->saveMesh(filename, &rigidTransform);
+	//const mat4f& rigidTransform = g_sceneRep->getLastRigidTransform();
+	g_marchingCubesHashSDF->saveMesh(filename, NULL, overwriteExistingFile);
 
 	std::cout << "Mesh generation time " << t.getElapsedTime() << " seconds" << std::endl;
 
@@ -482,6 +482,8 @@ bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo,
 //--------------------------------------------------------------------------------------
 HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
+	Util::printMemoryUseMB("init");
+
 	HRESULT hr = S_OK;
 
 	V_RETURN(GlobalAppState::get().OnD3D11CreateDevice(pd3dDevice));
@@ -502,10 +504,13 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 		MessageBox(NULL, L"No ready Depth Sensor found!", L"Error", MB_ICONHAND | MB_OK);
 		return S_FALSE;
 	}
+	//Util::printMemoryUseMB("rgbdsensor");
 
 	//static init
-	V_RETURN(g_RGBDAdapter.OnD3D11CreateDevice(pd3dDevice, getRGBDSensor(), GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight)); 
-	V_RETURN(g_CudaDepthSensor.OnD3D11CreateDevice(pd3dDevice, &g_RGBDAdapter)); 
+	V_RETURN(g_RGBDAdapter.OnD3D11CreateDevice(pd3dDevice, getRGBDSensor(), GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight));
+	//Util::printMemoryUseMB("rgbdadapter");
+	V_RETURN(g_CudaDepthSensor.OnD3D11CreateDevice(pd3dDevice, &g_RGBDAdapter));
+	//Util::printMemoryUseMB("cudadepthsensor");
 
 	V_RETURN(DX11QuadDrawer::OnD3D11CreateDevice(pd3dDevice));
 	V_RETURN(DX11PhongLighting::OnD3D11CreateDevice(pd3dDevice));
@@ -525,17 +530,23 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 	D3DXVECTOR3 vecAt ( 0.0f, 0.0f, 1.0f );
 	g_Camera.SetViewParams( &vecEye, &vecAt );
 
+	//Util::printMemoryUseMB("renderer");
+
 	g_cameraTracking = new CUDACameraTrackingMultiRes(g_RGBDAdapter.getWidth(), g_RGBDAdapter.getHeight(), GlobalCameraTrackingState::get().s_maxLevels);
 	//g_cameraTrackingRGBD = new CUDACameraTrackingMultiResRGBD(g_RGBDAdapter.getWidth(), g_RGBDAdapter.getHeight(), GlobalCameraTrackingState::get().s_maxLevels);
 
 	//g_CUDASolverSFS = new CUDAPatchSolverSFS();
 	//g_CUDASolverSHLighting = new CUDASolverSHLighting(GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight);
+	//Util::printMemoryUseMB("cameratracking");
 
 	g_sceneRep = new CUDASceneRepHashSDF(CUDASceneRepHashSDF::parametersFromGlobalAppState(GlobalAppState::get()));
+	//Util::printMemoryUseMB("scenerep");
 	g_rayCast = new CUDARayCastSDF(CUDARayCastSDF::parametersFromGlobalAppState(GlobalAppState::get(), g_RGBDAdapter.getColorIntrinsics(), g_RGBDAdapter.getColorIntrinsicsInv()));
-
+	//Util::printMemoryUseMB("raycast");
 	g_marchingCubesHashSDF = new CUDAMarchingCubesHashSDF(CUDAMarchingCubesHashSDF::parametersFromGlobalAppState(GlobalAppState::get()));
+	//Util::printMemoryUseMB("marchingcubes");
 	g_historgram = new CUDAHistrogramHashSDF(g_sceneRep->getHashParams());
+	//Util::printMemoryUseMB("histogram");
 
 	g_chunkGrid = new CUDASceneRepChunkGrid(g_sceneRep, 
 		GlobalAppState::get().s_streamingVoxelExtents, 
@@ -544,7 +555,7 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 		GlobalAppState::get().s_streamingInitialChunkListSize,
 		GlobalAppState::get().s_streamingEnabled,
 		GlobalAppState::get().s_streamingOutParts);
-
+	//Util::printMemoryUseMB("chunkgrid");
 
 	g_sceneRep->bindDepthCameraTextures(g_CudaDepthSensor.getDepthCameraData());
 
@@ -556,6 +567,10 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 		getRGBDSensor()->startReceivingFrames();
 	}
 
+	Util::printMemoryUseMB("post-init");
+
+	//std::cout << "waiting..." << std::endl;
+	//getchar();
 	return hr;
 }
 
@@ -638,10 +653,11 @@ void reconstruction()
 		&& GlobalAppState::get().s_binaryDumpSensorUseTrajectory) {
 		transformation = g_RGBDAdapter.getRigidTransform();
 
-		if (transformation[0] == -std::numeric_limits<float>::infinity()) {
+		if (transformation[0] == -std::numeric_limits<float>::infinity() || isnan(transformation[0])) {
 			std::cout << "INVALID FRAME" << std::endl;
 			return;
 		}
+		//std::cout << transformation << std::endl;
 	}
 
 	if (g_RGBDAdapter.getFrameNumber() > 1) {
@@ -663,19 +679,18 @@ void reconstruction()
 		if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_NetworkSensor)
 		{
 			mat4f rigid_transform_from_tango = g_RGBDAdapter.getRigidTransform();
-			//transformation = g_cameraTracking->applyCT(
-			//	g_CudaDepthSensor.getCameraSpacePositionsFloat4(), g_CudaDepthSensor.getNormalMapFloat4(), g_CudaDepthSensor.getColorMapFilteredFloat4(),
-			//	//g_rayCast->getRayCastData().d_depth4Transformed, g_CudaDepthSensor.getNormalMapNoRefinementFloat4(), g_CudaDepthSensor.getColorMapFilteredFloat4(),
-			//	g_rayCast->getRayCastData().d_depth4, g_rayCast->getRayCastData().d_normals, g_rayCast->getRayCastData().d_colors,
-			//	g_sceneRep->getLastRigidTransform(),
-			//	GlobalCameraTrackingState::getInstance().s_maxInnerIter, GlobalCameraTrackingState::getInstance().s_maxOuterIter,
-			//	GlobalCameraTrackingState::getInstance().s_distThres,	 GlobalCameraTrackingState::getInstance().s_normalThres,
-			//	100.0f, 3.0f,
-			//	g_sceneRep->getLastRigidTransform().getInverse()*rigid_transform_from_tango,
-			//	GlobalCameraTrackingState::getInstance().s_residualEarlyOut,
-			//	g_RGBDAdapter.getDepthIntrinsics(), g_CudaDepthSensor.getDepthCameraData(), 
-			//	NULL);
-			transformation = rigid_transform_from_tango;
+			transformation = g_cameraTracking->applyCT(
+				g_CudaDepthSensor.getCameraSpacePositionsFloat4(), g_CudaDepthSensor.getNormalMapFloat4(), g_CudaDepthSensor.getColorMapFilteredFloat4(),
+				//g_rayCast->getRayCastData().d_depth4Transformed, g_CudaDepthSensor.getNormalMapNoRefinementFloat4(), g_CudaDepthSensor.getColorMapFilteredFloat4(),
+				g_rayCast->getRayCastData().d_depth4, g_rayCast->getRayCastData().d_normals, g_rayCast->getRayCastData().d_colors,
+				g_sceneRep->getLastRigidTransform(),
+				GlobalCameraTrackingState::getInstance().s_maxInnerIter, GlobalCameraTrackingState::getInstance().s_maxOuterIter,
+				GlobalCameraTrackingState::getInstance().s_distThres,	 GlobalCameraTrackingState::getInstance().s_normalThres,
+				100.0f, 3.0f,
+				g_sceneRep->getLastRigidTransform().getInverse()*rigid_transform_from_tango,
+				GlobalCameraTrackingState::getInstance().s_residualEarlyOut,
+				g_RGBDAdapter.getDepthIntrinsics(), g_CudaDepthSensor.getDepthCameraData(), 
+				NULL);
 			if (transformation(0, 0) == -std::numeric_limits<float>::infinity()) {
 				std::cout << "Tracking lost in DepthSensing..." << std::endl;
 				transformation = rigid_transform_from_tango;
@@ -933,10 +948,11 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	if (bGotDepth == S_OK) ObjectSensing::getInstance()->processFrame(g_sceneRep);
 #endif // OBJECT_SENSING
 
-	//if (g_RGBDAdapter.getFrameNumber() > 630) { // recording 1
-	//	StopScanningAndExtractIsoSurfaceMC();
-	//	getchar();
-	//}
+	// for scannet
+	if (!GlobalAppState::get().s_playData) {
+		StopScanningAndExtractIsoSurfaceMC(util::removeExtensions(GlobalAppState::get().s_binaryDumpSensorFile) + "_vh.ply", true);
+		exit(0);
+	}
 
 
 	DXUT_EndPerfEvent();
@@ -964,7 +980,7 @@ int main(int argc, char** argv)
 	try {
 		std::string fileNameDescGlobalApp;
 		std::string fileNameDescGlobalTracking;
-		if (argc == 3) {
+		if (argc >= 3) {
 			fileNameDescGlobalApp = std::string(argv[1]);
 			fileNameDescGlobalTracking = std::string(argv[2]);
 		}
@@ -981,6 +997,19 @@ int main(int argc, char** argv)
 
 		//Read the global app state
 		ParameterFile parameterFileGlobalApp(fileNameDescGlobalApp);
+		std::ofstream out;
+		if (argc == 4) //for scan net: overwrite .sens file
+		{
+			const std::string filename = std::string(argv[3]);
+			parameterFileGlobalApp.overrideParameter("s_binaryDumpSensorFile", filename);
+			std::cout << "Overwriting s_binaryDumpSensorFile; now set to " << filename << std::endl;
+
+			//redirect stdout to file
+			out.open(util::removeExtensions(filename) + ".voxelhashing.log");
+			if (!out.is_open()) throw MLIB_EXCEPTION("unable to open log file " + util::removeExtensions(filename) + ".voxelhashing.log");
+			//std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
+			std::cout.rdbuf(out.rdbuf()); //redirect std::cout to out.txt!
+		}
 		GlobalAppState::getInstance().readMembers(parameterFileGlobalApp);
 		//GlobalAppState::getInstance().print();
 

@@ -137,6 +137,19 @@ public:
 		return matrix[i];
 	}
 
+	//! equal operator
+	inline bool operator==(const Matrix4x4<FloatType>& other) const {
+		for (unsigned i = 0; i < 16; i++) {
+			if (matrix[i] != other[i]) return false;
+		}
+		return true;
+	}
+
+	//! not equal operator
+	inline bool operator!=(const Matrix4x4<FloatType>& other) const {
+		return !(*this == other);
+	}
+
 	//! overwrites the 3x3 part; all other values remain unchanged
 	void setMatrix3x3(const Matrix3x3<FloatType>& m) {
 		for (unsigned char i = 0; i < 3; i++) {
