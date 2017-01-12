@@ -55,15 +55,30 @@ float4 PhongPS(VS_OUTPUT Input) : SV_TARGET
 	if(position.x != MINF && color.x != MINF && normal.x != MINF)
 	{
 		float4 material;
-		if(g_useMaterial == 1)  material = float4(color, 1.0f);
-		else					material = materialDiffuse;
+		if (g_useMaterial == 1)  {
+			material = float4(color, 1.0f);
+
+			const float3 eyeDir = normalize(position);
+			const float3 R = normalize(reflect(-normalize(lightDir), normal));
+
+			float4 ret = lightDiffuse  * material * max(dot(normal, -normalize(lightDir)), 0.0)				  // Diffuse
+				+ lightSpecular * materialSpecular * pow(max(dot(R, eyeDir), 0.0f), materialShininess); // Specular
+
+			// no ambient here (this is a hack)
+			return	ret * 2.0f;
+		}
+		else {
+			material = materialDiffuse;
+
+			const float3 eyeDir = normalize(position);
+			const float3 R = normalize(reflect(-normalize(lightDir), normal));
+
+			return		lightAmbient  * materialAmbient														  // Ambient
+				+ lightDiffuse  * material * max(dot(normal, -normalize(lightDir)), 0.0)				  // Diffuse
+				+ lightSpecular * materialSpecular * pow(max(dot(R, eyeDir), 0.0f), materialShininess); // Specular
+		}
 		
-		const float3 eyeDir = normalize(position);
-		const float3 R = normalize(reflect(-normalize(lightDir), normal));
-	
-		return		lightAmbient  * materialAmbient														  // Ambient
-				  + lightDiffuse  * material * max(dot(normal, -normalize(lightDir)), 0.0)				  // Diffuse
-				  + lightSpecular * materialSpecular * pow(max(dot(R, eyeDir), 0.0f), materialShininess); // Specular
+
 	}
 	else
 	{

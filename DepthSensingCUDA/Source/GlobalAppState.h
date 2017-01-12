@@ -94,7 +94,9 @@
 	X(bool, s_recordData) \
 	X(bool, s_recordCompression) \
 	X(std::string, s_recordDataFile) \
-	X(bool, s_reconstructionEnabled)
+	X(bool, s_reconstructionEnabled) \
+	X(bool, s_renderToFile) \
+	X(std::string, s_renderToFileDir)
 
 
 #ifndef VAR_NAME

@@ -156,7 +156,7 @@ void DX11CustomRenderTarget::OnD3D11DestroyDevice()
 	}
 
 	m_Width = 0;
-	m_Height = 0;
+	m_Height = 0; 
 }
 
 HRESULT DX11CustomRenderTarget::OnD3D11CreateDevice( ID3D11Device* pd3dDevice, unsigned int width, unsigned int height, const std::vector<DXGI_FORMAT>& formats)
@@ -215,7 +215,7 @@ void DX11CustomRenderTarget::Clear( ID3D11DeviceContext* pd3dDeviceContext, floa
 			float clearColor[] = {-std::numeric_limits<float>::infinity()};
 			pd3dDeviceContext->ClearRenderTargetView(m_TargetsRTV[i], clearColor);
 		}
-		else if (m_TextureFormats[i] == DXGI_FORMAT_R8G8B8A8_UNORM_SRGB) {
+		else if (m_TextureFormats[i] == DXGI_FORMAT_R8G8B8A8_UNORM) {//else if (m_TextureFormats[i] == DXGI_FORMAT_R8G8B8A8_UNORM_SRGB) {
 			float clearColor[] = {0};
 			pd3dDeviceContext->ClearRenderTargetView(m_TargetsRTV[i], clearColor);
 		}

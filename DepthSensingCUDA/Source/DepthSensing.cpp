@@ -18,6 +18,7 @@ CUDARGBDSensor				g_CudaDepthSensor;
 CUDARGBDAdapter				g_RGBDAdapter;
 DX11RGBDRenderer			g_RGBDRenderer;
 DX11CustomRenderTarget		g_CustomRenderTarget;
+DX11CustomRenderTarget		g_RenderToFileTarget;
 
 CUDACameraTrackingMultiRes*		g_cameraTracking	 = NULL;
 CUDACameraTrackingMultiResRGBD*	g_cameraTrackingRGBD = NULL;
@@ -525,6 +526,11 @@ HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFAC
 
 	V_RETURN(g_RGBDRenderer.OnD3D11CreateDevice(pd3dDevice, GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight));
 	V_RETURN(g_CustomRenderTarget.OnD3D11CreateDevice(pd3dDevice, GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight, formats));
+	if (GlobalAppState::get().s_renderToFile) {
+		std::vector<DXGI_FORMAT> rtfFormat;
+		rtfFormat.push_back(DXGI_FORMAT_R8G8B8A8_UNORM); // _SRGB
+		V_RETURN(g_RenderToFileTarget.OnD3D11CreateDevice(pd3dDevice, GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight, rtfFormat));
+	}
 
 	D3DXVECTOR3 vecEye ( 0.0f, 0.0f, 0.0f );
 	D3DXVECTOR3 vecAt ( 0.0f, 0.0f, 1.0f );
@@ -592,6 +598,7 @@ void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 
 	g_RGBDRenderer.OnD3D11DestroyDevice();
 	g_CustomRenderTarget.OnD3D11DestroyDevice();
+	g_RenderToFileTarget.OnD3D11DestroyDevice();
 
 	SAFE_DELETE(g_cameraTracking);
 	SAFE_DELETE(g_cameraTrackingRGBD);
@@ -954,8 +961,111 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 		exit(0);
 	}
 
+	if (GlobalAppState::get().s_renderToFile) {
+		renderToFile(pd3dImmediateContext);
+	}
 
 	DXUT_EndPerfEvent();
+}
+
+
+
+void renderToFile(ID3D11DeviceContext* pd3dImmediateContext) {
+
+	std::string baseFolder = GlobalAppState::get().s_renderToFileDir;
+
+	const mat4f& lastRigidTransform = g_sceneRep->getLastRigidTransform();
+	//static unsigned int frameNumber = 0;
+	unsigned int frameNumber = g_RGBDAdapter.getFrameNumber();
+	if (!util::directoryExists(baseFolder)) util::makeDirectory(baseFolder);
+
+	const std::string inputColorDir = baseFolder + "/" + "input_color/"; if (!util::directoryExists(inputColorDir)) util::makeDirectory(inputColorDir);
+	const std::string inputDepthDir = baseFolder + "/" + "input_depth/"; if (!util::directoryExists(inputDepthDir)) util::makeDirectory(inputDepthDir);
+	const std::string reconstructionDir = baseFolder + "/" + "reconstruction/"; if (!util::directoryExists(reconstructionDir)) util::makeDirectory(reconstructionDir);
+	const std::string reconstructColorDir = baseFolder + "/" + "reconstruction_color/"; if (!util::directoryExists(reconstructColorDir)) util::makeDirectory(reconstructColorDir);
+
+	g_sceneRep->setLastRigidTransformAndCompactify(lastRigidTransform, g_CudaDepthSensor.getDepthCameraData());
+	g_rayCast->render(g_sceneRep->getHashData(), g_sceneRep->getHashParams(), g_CudaDepthSensor.getDepthCameraData(), lastRigidTransform);
+
+	std::stringstream ssFrameNumber;	unsigned int numCountDigits = 6;
+	for (unsigned int i = std::max(1u, (unsigned int)std::ceilf(std::log10f((float)frameNumber + 1))); i < numCountDigits; i++) ssFrameNumber << "0";
+	ssFrameNumber << frameNumber;
+
+	mat4f view = mat4f::identity();
+	{	// reconstruction
+		const mat4f& renderIntrinsics = g_RGBDAdapter.getColorIntrinsics();
+
+		g_CustomRenderTarget.Clear(pd3dImmediateContext);
+		g_CustomRenderTarget.Bind(pd3dImmediateContext);
+		g_RGBDRenderer.RenderDepthMap(pd3dImmediateContext, g_rayCast->getRayCastData().d_depth, g_rayCast->getRayCastData().d_colors, g_rayCast->getRayCastParams().m_width, g_rayCast->getRayCastParams().m_height, MatrixConversion::toMlib(g_rayCast->getRayCastParams().m_intrinsicsInverse), view, renderIntrinsics, g_CustomRenderTarget.getWidth(), g_CustomRenderTarget.getHeight(), GlobalAppState::get().s_renderingDepthDiscontinuityThresOffset, GlobalAppState::get().s_renderingDepthDiscontinuityThresLin);
+		g_CustomRenderTarget.Unbind(pd3dImmediateContext);
+
+		bool colored = false;
+		DX11PhongLighting::render(pd3dImmediateContext, g_CustomRenderTarget.GetSRV(1), g_CustomRenderTarget.GetSRV(2), g_CustomRenderTarget.GetSRV(3), colored, g_CustomRenderTarget.getWidth(), g_CustomRenderTarget.getHeight());
+		
+		g_RenderToFileTarget.Clear(pd3dImmediateContext);
+		g_RenderToFileTarget.Bind(pd3dImmediateContext);
+		DX11QuadDrawer::RenderQuad(pd3dImmediateContext, DX11PhongLighting::GetColorsSRV(), 1.0f);
+		g_RenderToFileTarget.Unbind(pd3dImmediateContext);
+		
+		BYTE* data; unsigned int bytesPerElement;
+		g_RenderToFileTarget.copyToHost(data, bytesPerElement);
+		ColorImageR8G8B8A8 image(g_RenderToFileTarget.getHeight(), g_RenderToFileTarget.getWidth(), (vec4uc*)data);
+		for (unsigned int i = 0; i < image.getWidth()*image.getHeight(); i++) {
+			if (image.getDataPointer()[i].x > 0 || image.getDataPointer()[i].y > 0 || image.getDataPointer()[i].z > 0)
+				image.getDataPointer()[i].w = 255;
+		}
+		FreeImageWrapper::saveImage(reconstructionDir + ssFrameNumber.str() + ".png", image);
+		SAFE_DELETE_ARRAY(data);
+	}
+	{	// reconstruction color
+		const mat4f& renderIntrinsics = g_RGBDAdapter.getColorIntrinsics();
+
+
+		g_CustomRenderTarget.Clear(pd3dImmediateContext);
+		g_CustomRenderTarget.Bind(pd3dImmediateContext);
+		g_RGBDRenderer.RenderDepthMap(pd3dImmediateContext, g_rayCast->getRayCastData().d_depth, g_rayCast->getRayCastData().d_colors, g_rayCast->getRayCastParams().m_width, g_rayCast->getRayCastParams().m_height, MatrixConversion::toMlib(g_rayCast->getRayCastParams().m_intrinsicsInverse), view, renderIntrinsics, g_CustomRenderTarget.getWidth(), g_CustomRenderTarget.getHeight(), GlobalAppState::get().s_renderingDepthDiscontinuityThresOffset, GlobalAppState::get().s_renderingDepthDiscontinuityThresLin);
+		g_CustomRenderTarget.Unbind(pd3dImmediateContext);
+
+		bool colored = true;
+		DX11PhongLighting::render(pd3dImmediateContext, g_CustomRenderTarget.GetSRV(1), g_CustomRenderTarget.GetSRV(2), g_CustomRenderTarget.GetSRV(3), colored, g_CustomRenderTarget.getWidth(), g_CustomRenderTarget.getHeight());
+
+		g_RenderToFileTarget.Clear(pd3dImmediateContext);
+		g_RenderToFileTarget.Bind(pd3dImmediateContext);
+		DX11QuadDrawer::RenderQuad(pd3dImmediateContext, DX11PhongLighting::GetColorsSRV(), 1.0f);
+		g_RenderToFileTarget.Unbind(pd3dImmediateContext);
+
+		BYTE* data; unsigned int bytesPerElement;
+		g_RenderToFileTarget.copyToHost(data, bytesPerElement);
+		ColorImageR8G8B8A8 image(g_RenderToFileTarget.getHeight(), g_RenderToFileTarget.getWidth(), (vec4uc*)data);
+		for (unsigned int i = 0; i < image.getWidth()*image.getHeight(); i++) {
+			if (image.getDataPointer()[i].x > 0 || image.getDataPointer()[i].y > 0 || image.getDataPointer()[i].z > 0)
+				image.getDataPointer()[i].w = 255;
+		}
+		FreeImageWrapper::saveImage(reconstructColorDir + ssFrameNumber.str() + ".png", image);
+		SAFE_DELETE_ARRAY(data);
+	}
+
+	// for input color/depth
+	{	// input color
+		ColorImageR8G8B8A8 image(getRGBDSensor()->getColorHeight(), getRGBDSensor()->getColorWidth(), (vec4uc*)getRGBDSensor()->getColorRGBX());
+		for (unsigned int i = 0; i < image.getWidth()*image.getHeight(); i++) {
+			if (image.getDataPointer()[i].x > 0 || image.getDataPointer()[i].y > 0 || image.getDataPointer()[i].z > 0)
+				image.getDataPointer()[i].w = 255;
+		}
+		FreeImageWrapper::saveImage(inputColorDir + ssFrameNumber.str() + ".png", image);
+	}
+	{	// input depth
+		DepthImage depthImage(getRGBDSensor()->getDepthHeight(), getRGBDSensor()->getDepthWidth(), getRGBDSensor()->getDepthFloat());
+		ColorImageR32G32B32A32 image(depthImage);
+		for (unsigned int i = 0; i < image.getWidth()*image.getHeight(); i++) {
+			if (image.getDataPointer()[i].x > 0 || image.getDataPointer()[i].y > 0 || image.getDataPointer()[i].z > 0)
+				image.getDataPointer()[i].w = 1.0f;
+			if (depthImage.getDataPointer()[i] == 0.0f || depthImage.getDataPointer()[i] == -std::numeric_limits<float>::infinity())
+				image.getDataPointer()[i] = vec4f(0.0f);
+		}
+		FreeImageWrapper::saveImage(inputDepthDir + ssFrameNumber.str() + ".png", image);
+	}
 }
 
 
