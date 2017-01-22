@@ -164,9 +164,6 @@
     <ClCompile Include="Source\SensorDataReader.cpp">
       <Filter>Sensors</Filter>
     </ClCompile>
-    <ClCompile Include="Source\uplink.cpp">
-      <Filter>Sensors</Filter>
-    </ClCompile>
     <ClCompile Include="Source\StructureSensor.cpp">
       <Filter>Sensors</Filter>
     </ClCompile>

@@ -210,7 +210,6 @@
     <ClCompile Include="Source\StdOutputLogger.cpp" />
     <ClCompile Include="Source\StructureSensor.cpp" />
     <ClCompile Include="Source\TimingLog.cpp" />
-    <ClCompile Include="Source\uplink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\BinaryDumpReader.h" />
