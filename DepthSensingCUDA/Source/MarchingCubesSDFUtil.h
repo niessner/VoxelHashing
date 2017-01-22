@@ -45,6 +45,10 @@ struct MarchingCubesData {
 	__device__ __host__
 	MarchingCubesData() {
 		d_params = NULL;
+
+		d_numOccupiedBlocks = NULL;
+		d_occupiedBlocks = NULL;
+
 		d_triangles = NULL;
 		d_numTriangles = NULL;
 		m_bIsOnGPU = false;
@@ -52,14 +56,27 @@ struct MarchingCubesData {
 
 	__host__
 	void allocate(const MarchingCubesParams& params, bool dataOnGPU = true) {
+
+		//TODO max blocks 
+		uint maxBlocks = params.m_hashNumBuckets*params.m_hashBucketSize;
+
 		m_bIsOnGPU = dataOnGPU;
 		if (m_bIsOnGPU) {
 			cutilSafeCall(cudaMalloc(&d_params, sizeof(MarchingCubesParams)));
+
+			cutilSafeCall(cudaMalloc(&d_numOccupiedBlocks, sizeof(uint)));
+			cutilSafeCall(cudaMalloc(&d_occupiedBlocks, sizeof(uint)*maxBlocks));
+
 			cutilSafeCall(cudaMalloc(&d_triangles, sizeof(Triangle)* params.m_maxNumTriangles));
 			cutilSafeCall(cudaMalloc(&d_numTriangles, sizeof(uint)));
 		}
 		else {
 			d_params = new MarchingCubesParams;
+
+			//don't really need those on the CPU...
+			//d_numOccupiedBlocks = new uint;
+			//d_occupiedBlocks = new uint[maxBlocks];
+
 			d_triangles = new Triangle[params.m_maxNumTriangles];
 			d_numTriangles = new uint;
 		}
@@ -79,20 +96,33 @@ struct MarchingCubesData {
 	void free() {
 		if (m_bIsOnGPU) {
 			cutilSafeCall(cudaFree(d_params));
+
+			cutilSafeCall(cudaFree(d_numOccupiedBlocks));
+			cutilSafeCall(cudaFree(d_occupiedBlocks));
+
 			cutilSafeCall(cudaFree(d_triangles));
 			cutilSafeCall(cudaFree(d_numTriangles));
 		}
 		else {
 			if (d_params) delete d_params;
+
+			if (d_numOccupiedBlocks) delete d_numOccupiedBlocks;
+			if (d_occupiedBlocks) delete[] d_occupiedBlocks;
+
 			if (d_triangles) delete[] d_triangles;
 			if (d_numTriangles) delete d_numTriangles;
 		}
 
 		d_params = NULL;
+
+		d_numOccupiedBlocks = NULL;
+		d_occupiedBlocks = NULL;
+
 		d_triangles = NULL;
 		d_numTriangles = NULL;
 	}
 
+	//note: does not copy occupiedBlocks and occupiedVoxels
 	__host__
 	MarchingCubesData copyToCPU() const {
 		MarchingCubesParams params;
@@ -104,6 +134,12 @@ struct MarchingCubesData {
 		cutilSafeCall(cudaMemcpy(data.d_numTriangles, d_numTriangles, sizeof(uint), cudaMemcpyDeviceToHost));
 		cutilSafeCall(cudaMemcpy(data.d_triangles, d_triangles, sizeof(Triangle) * (params.m_maxNumTriangles), cudaMemcpyDeviceToHost));
 		return data;	//TODO MATTHIAS look at this (i.e,. when does memory get destroyed ; if it's in the destructor it would kill everything here 
+	}
+
+	__host__ unsigned int getNumOccupiedBlocks() const {
+		unsigned int res = 0;
+		cutilSafeCall(cudaMemcpy(&res, d_numOccupiedBlocks, sizeof(uint), cudaMemcpyDeviceToHost));
+		return res;
 	}
 
 	/////////////////
@@ -278,6 +314,9 @@ struct MarchingCubesData {
 #endif // __CUDACC__
 
 	MarchingCubesParams*	d_params;
+
+	uint*			d_numOccupiedBlocks;
+	uint*			d_occupiedBlocks;
 
 	uint*			d_numTriangles;
 	Triangle*		d_triangles;

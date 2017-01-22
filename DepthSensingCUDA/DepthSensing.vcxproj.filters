@@ -164,6 +164,12 @@
     <ClCompile Include="Source\SensorDataReader.cpp">
       <Filter>Sensors</Filter>
     </ClCompile>
+    <ClCompile Include="Source\uplink.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StructureSensor.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CameraParams.h" />
@@ -322,6 +328,9 @@
       <Filter>DXHelper</Filter>
     </ClInclude>
     <ClInclude Include="Source\SensorDataReader.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StructureSensor.h">
       <Filter>Sensors</Filter>
     </ClInclude>
   </ItemGroup>

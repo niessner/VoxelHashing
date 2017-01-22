@@ -1,7 +1,7 @@
 ﻿
 #include "stdafx.h"
 #include "DepthSensing.h"
-//#include "StructureSensor.h"
+#include "StructureSensor.h"
 #include "SensorDataReader.h"
 
 //--------------------------------------------------------------------------------------
@@ -785,8 +785,17 @@ void reconstruction()
 		vec4f posWorld = transformation*GlobalAppState::getInstance().s_streamingPos; // trans laggs one frame *trans
 		vec3f p(posWorld.x, posWorld.y, posWorld.z);
 
-		g_chunkGrid->streamOutToCPUPass0GPU(p, GlobalAppState::get().s_streamingRadius, true, true);
-		g_chunkGrid->streamInToGPUPass1GPU(true);
+		if (GlobalAppState::get().s_offlineProcessing) {
+			for (unsigned int i = 0; i < GlobalAppState::get().s_streamingOutParts; i++) {
+				g_chunkGrid->streamOutToCPUPass0GPU(p, GlobalAppState::get().s_streamingRadius, g_chunkGrid->s_useParts, true);
+				g_chunkGrid->streamInToGPUPass1GPU(true);
+			}
+		}
+		else {
+			g_chunkGrid->streamOutToCPUPass0GPU(p, GlobalAppState::get().s_streamingRadius, g_chunkGrid->s_useParts, true);
+			g_chunkGrid->streamInToGPUPass1GPU(true);
+		}
+
 
 		//g_chunkGrid->debugCheckForDuplicates();
 	}
@@ -956,8 +965,10 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 #endif // OBJECT_SENSING
 
 	// for scannet
-	if (!GlobalAppState::get().s_playData) {
-		StopScanningAndExtractIsoSurfaceMC(util::removeExtensions(GlobalAppState::get().s_binaryDumpSensorFile[0]) + "_vh.ply", true);
+	if (!GlobalAppState::get().s_playData && GlobalAppState::get().s_offlineProcessing) {
+		std::string filename = GlobalAppState::get().s_binaryDumpSensorFile[0];
+		filename = ml::util::removeExtensions(filename) + "_sh.ply";
+		StopScanningAndExtractIsoSurfaceMC(filename, true);
 		exit(0);
 	}
 
@@ -1015,7 +1026,7 @@ void renderToFile(ID3D11DeviceContext* pd3dImmediateContext) {
 			if (image.getDataPointer()[i].x > 0 || image.getDataPointer()[i].y > 0 || image.getDataPointer()[i].z > 0)
 				image.getDataPointer()[i].w = 255;
 		}
-		FreeImageWrapper::saveImage(reconstructionDir + ssFrameNumber.str() + ".png", image);
+		FreeImageWrapper::saveImage(reconstructionDir + ssFrameNumber.str() + ".jpg", image);
 		SAFE_DELETE_ARRAY(data);
 	}
 	{	// reconstruction color
@@ -1042,7 +1053,7 @@ void renderToFile(ID3D11DeviceContext* pd3dImmediateContext) {
 			if (image.getDataPointer()[i].x > 0 || image.getDataPointer()[i].y > 0 || image.getDataPointer()[i].z > 0)
 				image.getDataPointer()[i].w = 255;
 		}
-		FreeImageWrapper::saveImage(reconstructColorDir + ssFrameNumber.str() + ".png", image);
+		FreeImageWrapper::saveImage(reconstructColorDir + ssFrameNumber.str() + ".jpg", image);
 		SAFE_DELETE_ARRAY(data);
 	}
 
@@ -1053,7 +1064,7 @@ void renderToFile(ID3D11DeviceContext* pd3dImmediateContext) {
 			if (image.getDataPointer()[i].x > 0 || image.getDataPointer()[i].y > 0 || image.getDataPointer()[i].z > 0)
 				image.getDataPointer()[i].w = 255;
 		}
-		FreeImageWrapper::saveImage(inputColorDir + ssFrameNumber.str() + ".png", image);
+		FreeImageWrapper::saveImage(inputColorDir + ssFrameNumber.str() + ".jpg", image);
 	}
 	{	// input depth
 		DepthImage depthImage(getRGBDSensor()->getDepthHeight(), getRGBDSensor()->getDepthWidth(), getRGBDSensor()->getDepthFloat());
@@ -1064,7 +1075,7 @@ void renderToFile(ID3D11DeviceContext* pd3dImmediateContext) {
 			if (depthImage.getDataPointer()[i] == 0.0f || depthImage.getDataPointer()[i] == -std::numeric_limits<float>::infinity())
 				image.getDataPointer()[i] = vec4f(0.0f);
 		}
-		FreeImageWrapper::saveImage(inputDepthDir + ssFrameNumber.str() + ".png", image);
+		FreeImageWrapper::saveImage(inputDepthDir + ssFrameNumber.str() + ".jpg", image);
 	}
 }
 
@@ -1085,7 +1096,6 @@ int main(int argc, char** argv)
 	ObjectSensing::getInstance()->initQtApp(false);
 	ObjectSensing::getInstance()->detach();
 #endif // OBJECT_SENSING
-
 
 	try {
 		std::string fileNameDescGlobalApp;
@@ -1124,6 +1134,7 @@ int main(int argc, char** argv)
 				}
 			}
 		}
+
 		GlobalAppState::getInstance().readMembers(parameterFileGlobalApp);
 		//GlobalAppState::getInstance().print();
 
@@ -1131,7 +1142,6 @@ int main(int argc, char** argv)
 		ParameterFile parameterFileGlobalTracking(fileNameDescGlobalTracking);
 		GlobalCameraTrackingState::getInstance().readMembers(parameterFileGlobalTracking);
 		//GlobalCameraTrackingState::getInstance().print();
-
 
 		// Set DXUT callbacks
 		DXUTSetCallbackDeviceChanging(ModifyDeviceSettings);

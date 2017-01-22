@@ -36,11 +36,12 @@ public:
 	void copyTrianglesToCPU();
 	void saveMesh(const std::string& filename, const mat4f *transform = NULL, bool overwriteExistingFile = false);
 
+	void extractIsoSurface(CUDASceneRepChunkGrid& chunkGrid, const RayCastData& rayCastData, const vec3f& camPos, float radius);
 	void extractIsoSurface(const HashData& hashData, const HashParams& hashParams, const RayCastData& rayCastData, const vec3f& minCorner = vec3f(0.0f, 0.0f, 0.0f), const vec3f& maxCorner = vec3f(0.0f, 0.0f, 0.0f), bool boxEnabled = false);
 
 	//void extractIsoSurfaceCPU(const HashData& hashData, const HashParams& hashParams, const RayCastData& rayCastData);
 
-	void extractIsoSurface(CUDASceneRepChunkGrid& chunkGrid, const RayCastData& rayCastData, const vec3f& camPos, float radius);
+	
 
 
 private:

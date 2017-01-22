@@ -244,26 +244,33 @@ private:
 
 	void alloc(const DepthCameraData& depthCameraData, const DepthCameraParams& depthCameraParams, const unsigned int* d_bitMask) {
 		//Start Timing
-		if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.start(); }
+		if (GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.start(); }
 
-		//resetHashBucketMutexCUDA(m_hashData, m_hashParams);
-		//allocCUDA(m_hashData, m_hashParams, depthCameraData, depthCameraParams, d_bitMask);
+		if (GlobalAppState::get().s_offlineProcessing) {
+			//allocate until all blocks are allocated
+			unsigned int prevFree = getHeapFreeCount();
+			while (1) {
+				resetHashBucketMutexCUDA(m_hashData, m_hashParams);
+				allocCUDA(m_hashData, m_hashParams, depthCameraData, depthCameraParams, d_bitMask);
 
-		//allocate until all blocks are allocated
-		unsigned int prevFree = getHeapFreeCount();
-		while (1) {
-			resetHashBucketMutexCUDA(m_hashData, m_hashParams);
-			allocCUDA(m_hashData, m_hashParams, depthCameraData, depthCameraParams, d_bitMask);
+				unsigned int currFree = getHeapFreeCount();
 
-			unsigned int currFree = getHeapFreeCount();
-
-			if (prevFree != currFree) {
-				prevFree = currFree;
-			}
-			else {
-				break;
+				if (prevFree != currFree) {
+					prevFree = currFree;
+				}
+				else {
+					break;
+				}
 			}
 		}
+		else {
+			//this version is faster, but it doesn't guarantee that all blocks are allocated (staggers alloc to the next frame)
+			resetHashBucketMutexCUDA(m_hashData, m_hashParams);
+			allocCUDA(m_hashData, m_hashParams, depthCameraData, depthCameraParams, d_bitMask);
+		}
+
+
+
 
 		// Stop Timing
 		if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.stop(); TimingLog::totalTimeAlloc += m_timer.getElapsedTimeMS(); TimingLog::countTimeAlloc++; }

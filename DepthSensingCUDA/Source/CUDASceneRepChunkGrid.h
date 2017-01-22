@@ -160,6 +160,7 @@ public:
 		m_streamOutParts = streamOutParts;
 
 		m_maxNumberOfSDFBlocksIntegrateFromGlobalHash = 100000;
+		//m_maxNumberOfSDFBlocksIntegrateFromGlobalHash = GlobalAppState::get().s_hashNumSDFBlocks / GlobalAppState::get().s_streamingOutParts;
 
 		h_SDFBlockDescOutput = NULL;
 		h_SDFBlockOutput = NULL;
@@ -545,7 +546,11 @@ public:
 
 	bool getTerminatedThread() const {
 		return s_terminateThread;
-	}
+	} 
+
+	static const bool s_useParts = true;
+
+	friend class CUDAMarchingCubesHashSDF;	//for marching cube
 
 	private:
 

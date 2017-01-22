@@ -208,7 +208,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\StdOutputLogger.cpp" />
+    <ClCompile Include="Source\StructureSensor.cpp" />
     <ClCompile Include="Source\TimingLog.cpp" />
+    <ClCompile Include="Source\uplink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\BinaryDumpReader.h" />
@@ -269,6 +271,7 @@
     <ClInclude Include="Source\SensorDataReader.h" />
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\StdOutputLogger.h" />
+    <ClInclude Include="Source\StructureSensor.h" />
     <ClInclude Include="Source\Tables.h" />
     <ClInclude Include="Source\TimingLog.h" />
     <ClInclude Include="Source\Util.h" />

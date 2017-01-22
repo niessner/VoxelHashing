@@ -3,7 +3,7 @@
 
 #include "CUDASceneRepChunkGrid.h"
 
-static const bool s_useParts = true;
+
 
 LONG WINAPI StreamingFunc(LPVOID lParam) {
 	CUDASceneRepChunkGrid* chunkGrid = (CUDASceneRepChunkGrid*)lParam;
@@ -13,7 +13,11 @@ LONG WINAPI StreamingFunc(LPVOID lParam) {
 		HRESULT hr = S_OK;
 
 		chunkGrid->streamOutToCPUPass1CPU(true);
-		chunkGrid->streamInToGPUPass0CPU(chunkGrid->getPosCamera(), chunkGrid->getRadius(), s_useParts);
+
+		bool useParts = CUDASceneRepChunkGrid::s_useParts;
+		if (GlobalAppState::get().s_offlineProcessing) useParts = false;	// needs to overwrite for streaming back to the GPU
+
+		chunkGrid->streamInToGPUPass0CPU(chunkGrid->getPosCamera(), chunkGrid->getRadius(), useParts, true);
 
 		if (chunkGrid->getTerminatedThread()) {
 			return 0;
@@ -86,7 +90,6 @@ void CUDASceneRepChunkGrid::streamOutToCPUPass0GPU(const vec3f& posCamera, float
 
 		integrateFromGlobalHashPass2CUDA(m_sceneRepHashSDF->getHashParams(), m_sceneRepHashSDF->getHashData(), threadsPerPart, d_SDFBlockDescOutput, (Voxel*)d_SDFBlockOutput, nSDFBlockDescs);
 
-
 		MLIB_CUDA_SAFE_CALL(cudaMemcpy(h_SDFBlockDescOutput, d_SDFBlockDescOutput, sizeof(SDFBlockDesc)*nSDFBlockDescs, cudaMemcpyDeviceToHost));
 		MLIB_CUDA_SAFE_CALL(cudaMemcpy(h_SDFBlockOutput, d_SDFBlockOutput, sizeof(SDFBlock)*nSDFBlockDescs, cudaMemcpyDeviceToHost));
 	}
@@ -105,7 +108,7 @@ void CUDASceneRepChunkGrid::streamOutToCPUPass1CPU(bool multiThreaded /*= true*/
 		WaitForSingleObject(hEventOutConsume, INFINITE);
 		WaitForSingleObject(hMutexOut, INFINITE);
 
-		if (s_terminateThread)	return;		//avoid duplicate insertions when stop multithreading is called
+		if (s_terminateThread)	return;		//avoid duplicate insertions when stop multi-threading is called
 	}
 
 	if (s_nStreamdOutBlocks != 0) {
@@ -281,12 +284,12 @@ unsigned int CUDASceneRepChunkGrid::integrateInHash( const vec3f& posCamera, flo
 					if (isChunkInSphere(delinearizeChunkIndex(index), posCamera, radius)) // Is in camera range
 					{
 						unsigned int nBlock = m_grid[index]->getNElements();
-						if (nBlock > m_maxNumberOfSDFBlocksIntegrateFromGlobalHash) {
+						if (nBlock + nSDFBlocks > m_maxNumberOfSDFBlocksIntegrateFromGlobalHash) {
 							throw MLIB_EXCEPTION("not enough memory allocated for intermediate GPU buffer");
 						}
 						// Copy data to GPU
-						MLIB_CUDA_SAFE_CALL(cudaMemcpy(d_SDFBlockDescInput, &(m_grid[index]->getSDFBlockDescs()[0]), sizeof(SDFBlockDesc)*nBlock, cudaMemcpyHostToDevice));
-						MLIB_CUDA_SAFE_CALL(cudaMemcpy(d_SDFBlockInput, &(m_grid[index]->getSDFBlocks()[0]), sizeof(SDFBlock)*nBlock, cudaMemcpyHostToDevice));
+						MLIB_CUDA_SAFE_CALL(cudaMemcpy(d_SDFBlockDescInput + nSDFBlocks, &(m_grid[index]->getSDFBlockDescs()[0]), sizeof(SDFBlockDesc)*nBlock, cudaMemcpyHostToDevice));
+						MLIB_CUDA_SAFE_CALL(cudaMemcpy(d_SDFBlockInput + nSDFBlocks, &(m_grid[index]->getSDFBlocks()[0]), sizeof(SDFBlock)*nBlock, cudaMemcpyHostToDevice));
 
 						// Remove data from CPU
 						m_grid[index]->clear();
@@ -294,7 +297,9 @@ unsigned int CUDASceneRepChunkGrid::integrateInHash( const vec3f& posCamera, flo
 
 						nSDFBlocks += nBlock;
 
-						if (useParts) return nSDFBlocks; // only in one chunk per frame
+						if (useParts) {
+							return nSDFBlocks; // only in one chunk per frame
+						}
 					}
 				}
 			}

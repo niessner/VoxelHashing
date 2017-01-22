@@ -1,17 +1,17 @@
 // 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense; 7=StructureSensor; 8=SensorDataReader
 s_sensorIdx = 8;
 
-s_windowWidth = 1280;		//render window width
-s_windowHeight = 960;		//render window height
-//s_windowWidth = 640;		//render window width
-//s_windowHeight = 480;		//render window height
+//s_windowWidth = 1280;		//render window width
+//s_windowHeight = 960;		//render window height
+s_windowWidth = 640;		//render window width
+s_windowHeight = 480;		//render window height
 
 s_adapterWidth = 640;		//input depth gets re-sampled to this width (decrease to improve perf.)
 s_adapterHeight = 480;		//input depth gets re-sampled to this height (decrease to improve perf.)
 //s_adapterWidth = 1296;		//this really hits perf (ray cast)
 //s_adapterHeight = 968;		//this really hits perf (ray cast)
 
-s_sensorDepthMax = 3.5f;	//maximum sensor depth in meter
+s_sensorDepthMax = 5.0f;	//maximum sensor depth in meter
 s_sensorDepthMin = 0.5f;	//minimum sensor depth in meter
 
 // cropping options for PrimeSense & Asus Xtion Pro
@@ -26,7 +26,7 @@ s_SDFVoxelSize = 0.004f;				//voxel size in meter (IMPORTANT: reduces to improve
 s_SDFMarchingCubeThreshFactor = 10.0f;	//marching cube thresh: s_SDFMarchingCubeThresh = s_SDFMarchingCubeThreshFactor*s_SDFVoxelSize
 s_SDFTruncation = 0.02f;				//truncation in meter
 s_SDFTruncationScale = 0.01f;			//truncation scale in meter per meter
-s_SDFMaxIntegrationDistance = 3.0f;		//maximum integration in meter
+s_SDFMaxIntegrationDistance = 4.0f;		//maximum integration in meter
 s_SDFIntegrationWeightSample = 10;		//weight for an integrated depth value
 s_SDFIntegrationWeightMax = 255;		//maximum integration weight for a voxel
 // s_SDFBlockSize is pound defined (SDF_BLOCK_SIZE)
@@ -43,8 +43,9 @@ s_SDFRayThresDistFactor = 50.0f;		//(don't touch) s_SDFRayThresDist = s_SDFRayTh
 s_SDFUseGradients 		= false;		//analytic gradients for rendering
 
 // .sens file input for offline processing (need to set s_sensorIdx accordingly)
-//s_binaryDumpSensorFile[0] = "E:/Work/test_0.sens";
-s_binaryDumpSensorFile[0] = "./DumpOutput/2016-08-06_02-59-01__C7BA9586-8237-4204-9116-02AE5804338A.sens";
+s_binaryDumpSensorFile[0] = "./DumpOutput/1LXtFkjw3qL_0.sens";
+s_binaryDumpSensorFile[1] = "./DumpOutput/1LXtFkjw3qL_1.sens";
+s_binaryDumpSensorFile[2] = "./DumpOutput/1LXtFkjw3qL_2.sens";
 
 s_binaryDumpSensorUseTrajectory = true;
 s_binaryDumpSensorUseTrajectoryOnlyInit = false;	//only valid if prev is true; precomputed traj for ICP, which is run
@@ -85,7 +86,7 @@ s_renderingDepthDiscontinuityThresLin	 = 0.001f; // additional discontinuity thr
 s_remappingDepthDiscontinuityThresOffset = 0.012f; // discontinuity offset in meter
 s_remappingDepthDiscontinuityThresLin	 = 0.01f; // additional discontinuity threshold per meter
 
-s_bUseCameraCalibration = true;
+s_bUseCameraCalibration = false;
 
 s_marchingCubesMaxNumTriangles = 2500000; // max buffer size for marching cube
 
@@ -106,3 +107,5 @@ s_recordDataFile = "Dump/test.sens";
 s_reconstructionEnabled = true;
 s_renderToFile = false;				//for making paper videos: renders all input/raycasts etc. to images
 s_renderToFileDir = "./output/";
+
+s_offlineProcessing = false;			//slower, but makes sure that all voxels are alllocated and streaming all blocks is enforced

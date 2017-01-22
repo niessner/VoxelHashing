@@ -10,6 +10,10 @@ extern "C" void extractIsoSurfaceCUDA(const HashData& hashData,
 										 const MarchingCubesParams& params,
 										 MarchingCubesData& data);
 
+
+extern "C" void extractIsoSurfacePass1CUDA(const HashData& hashData, const RayCastData& rayCastData, const MarchingCubesParams& params, MarchingCubesData& data);
+extern "C" void extractIsoSurfacePass2CUDA(const HashData& hashData, const RayCastData& rayCastData, const MarchingCubesParams& params, MarchingCubesData& data, unsigned int numOccupiedBlocks);
+
 void CUDAMarchingCubesHashSDF::create(const MarchingCubesParams& params)
 { 
 	m_params = params;
@@ -103,21 +107,10 @@ void CUDAMarchingCubesHashSDF::saveMesh(const std::string& filename, const mat4f
 
 }
 
-void CUDAMarchingCubesHashSDF::extractIsoSurface(const HashData& hashData, const HashParams& hashParams, const RayCastData& rayCastData,  const vec3f& minCorner, const vec3f& maxCorner, bool boxEnabled)
-{
-	resetMarchingCubesCUDA(m_data);
 
-	m_params.m_maxCorner = MatrixConversion::toCUDA(maxCorner);
-	m_params.m_minCorner = MatrixConversion::toCUDA(minCorner);
-	m_params.m_boxEnabled = boxEnabled;
-	m_data.updateParams(m_params);
-
-	extractIsoSurfaceCUDA(hashData, rayCastData, m_params, m_data);
-	copyTrianglesToCPU();
-}
 
 void CUDAMarchingCubesHashSDF::extractIsoSurface( CUDASceneRepChunkGrid& chunkGrid, const RayCastData& rayCastData, const vec3f& camPos, float radius)
-{
+{ 
 
 	chunkGrid.stopMultiThreading();
 
@@ -132,8 +125,10 @@ void CUDAMarchingCubesHashSDF::extractIsoSurface( CUDASceneRepChunkGrid& chunkGr
 		for (int y = minGridPos.y; y < maxGridPos.y; y++) {
 			for (int z = minGridPos.z; z < maxGridPos.z; z++) {
 
-				vec3i chunk(x, y, z);
+				vec3i chunk(x, y, z);			
+
 				if (chunkGrid.containsSDFBlocksChunk(chunk)) {
+					
 					std::cout << "Marching Cubes on chunk (" << x << ", " << y << ", " << z << ") " << std::endl;
 
 					chunkGrid.streamInToGPUChunkNeighborhood(chunk, 1);
@@ -146,8 +141,8 @@ void CUDAMarchingCubesHashSDF::extractIsoSurface( CUDASceneRepChunkGrid& chunkGr
 					vec3f maxCorner = chunkCenter+voxelExtends/2.0f+vec3f(virtualVoxelSize, virtualVoxelSize, virtualVoxelSize)*(float)chunkGrid.getHashParams().m_SDFBlockSize;
 
 					extractIsoSurface(chunkGrid.getHashData(), chunkGrid.getHashParams(), rayCastData, minCorner, maxCorner, true);
-
-					chunkGrid.streamOutToCPUAll();
+				
+					chunkGrid.streamOutToCPUAll();				
 				}
 			}
 		}
@@ -158,6 +153,37 @@ void CUDAMarchingCubesHashSDF::extractIsoSurface( CUDASceneRepChunkGrid& chunkGr
 
 	chunkGrid.startMultiThreading();
 }
+
+void CUDAMarchingCubesHashSDF::extractIsoSurface(const HashData& hashData, const HashParams& hashParams, const RayCastData& rayCastData, const vec3f& minCorner, const vec3f& maxCorner, bool boxEnabled)
+{
+	resetMarchingCubesCUDA(m_data);
+
+	m_params.m_maxCorner = MatrixConversion::toCUDA(maxCorner);
+	m_params.m_minCorner = MatrixConversion::toCUDA(minCorner);
+	m_params.m_boxEnabled = boxEnabled;
+	m_data.updateParams(m_params);
+
+	//cutilSafeCall(cudaDeviceSynchronize());
+	//Timer t;
+
+	//extractIsoSurfaceCUDA(hashData, rayCastData, m_params, m_data);		//OLD one-pass version (it's inefficient though)
+
+	//std::cout << "num occupied blocks [before]: " << m_data.getNumOccupiedBlocks() << std::endl;
+	extractIsoSurfacePass1CUDA(hashData, rayCastData, m_params, m_data);
+	//std::cout << "num occupied blocks [after]: " << m_data.getNumOccupiedBlocks() << std::endl;
+	extractIsoSurfacePass2CUDA(hashData, rayCastData, m_params, m_data, m_data.getNumOccupiedBlocks());
+
+	//cutilSafeCall(cudaDeviceSynchronize());
+	//std::cout << "extract iso took0: " << t.getElapsedTimeMS() << " ms" << std::endl;
+	//t.start();
+
+	copyTrianglesToCPU();
+
+	//cutilSafeCall(cudaDeviceSynchronize());
+	//std::cout << "extract iso took1: " << t.getElapsedTimeMS() << " ms" << std::endl;
+	//t.start();
+}
+
 
 
 /*

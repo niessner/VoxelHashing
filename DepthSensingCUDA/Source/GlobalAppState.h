@@ -96,7 +96,8 @@
 	X(std::string, s_recordDataFile) \
 	X(bool, s_reconstructionEnabled) \
 	X(bool, s_renderToFile) \
-	X(std::string, s_renderToFileDir)
+	X(std::string, s_renderToFileDir) \
+	X(bool, s_offlineProcessing)
 
 
 #ifndef VAR_NAME
