@@ -34,6 +34,8 @@ void CUDAMarchingCubesHashSDF::copyTrianglesToCPU() {
 
 	unsigned int nTriangles = *cpuData.d_numTriangles;
 
+	if (nTriangles >= m_params.m_maxNumTriangles) throw MLIB_EXCEPTION("not enough memory to store triangles for chunk; increase s_marchingCubesMaxNumTriangles");
+
 	//std::cout << "Marching Cubes: #triangles = " << nTriangles << std::endl;
 
 	if (nTriangles != 0) {
@@ -163,25 +165,13 @@ void CUDAMarchingCubesHashSDF::extractIsoSurface(const HashData& hashData, const
 	m_params.m_boxEnabled = boxEnabled;
 	m_data.updateParams(m_params);
 
-	//cutilSafeCall(cudaDeviceSynchronize());
-	//Timer t;
 
 	//extractIsoSurfaceCUDA(hashData, rayCastData, m_params, m_data);		//OLD one-pass version (it's inefficient though)
 
-	//std::cout << "num occupied blocks [before]: " << m_data.getNumOccupiedBlocks() << std::endl;
 	extractIsoSurfacePass1CUDA(hashData, rayCastData, m_params, m_data);
-	//std::cout << "num occupied blocks [after]: " << m_data.getNumOccupiedBlocks() << std::endl;
 	extractIsoSurfacePass2CUDA(hashData, rayCastData, m_params, m_data, m_data.getNumOccupiedBlocks());
 
-	//cutilSafeCall(cudaDeviceSynchronize());
-	//std::cout << "extract iso took0: " << t.getElapsedTimeMS() << " ms" << std::endl;
-	//t.start();
-
 	copyTrianglesToCPU();
-
-	//cutilSafeCall(cudaDeviceSynchronize());
-	//std::cout << "extract iso took1: " << t.getElapsedTimeMS() << " ms" << std::endl;
-	//t.start();
 }
 
 

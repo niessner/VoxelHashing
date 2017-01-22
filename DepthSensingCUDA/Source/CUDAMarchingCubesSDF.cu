@@ -80,7 +80,7 @@ __global__ void extractIsoSurfacePass1Kernel(HashData hashData, RayCastData rayC
 			//float3 maxCorner = data.d_params->m_maxCorner;
 			//
 			//if (data.d_params->m_boxEnabled == 1) {
-			//	//if (!data.isInBoxAA(minCorner, maxCorner, pos)) return;
+			//	if (!data.isInBoxAA(minCorner, maxCorner, pos)) return;
 			//}
 
 			uint addr = atomicAdd(&data.d_numOccupiedBlocks[0], 1);

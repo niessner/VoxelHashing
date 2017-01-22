@@ -313,24 +313,36 @@ public:
 		return ((m_grid[index] != 0) && m_grid[index]->isStreamedOut());
 	}
 
+	//conservative test: if the *entire* chunk is within the sphere
 	bool isChunkInSphere(const vec3i& chunk, const vec3f& center, float radius) const {
-		vec3f posWorld = chunkToWorld(chunk);
-		vec3f offset = m_voxelExtents/2.0f;
+		//vec3f posWorld = chunkToWorld(chunk);
+		//vec3f offset = m_voxelExtents/2.0f;
 
-		for (int x = -1; x<=1; x+=2)	{
-			for (int y = -1; y<=1; y+=2)	{
-				for (int z = -1; z<=1; z+=2)	{
-					vec3f p = vec3f(posWorld.x+x*offset.x, posWorld.y+y*offset.y, posWorld.z+z*offset.z);
-					float d = (p-center).length();
+		//for (int x = -1; x<=1; x+=2)	{
+		//	for (int y = -1; y<=1; y+=2)	{
+		//		for (int z = -1; z<=1; z+=2)	{
+		//			vec3f p = vec3f(posWorld.x+x*offset.x, posWorld.y+y*offset.y, posWorld.z+z*offset.z);
+		//			float d = (p-center).length();
 
-					if (d > radius) {
-						return false;
-					}
-				}
-			}
+		//			if (d > radius) {
+		//				return false;
+		//			}
+		//		}
+		//	}
+		//}
+		//return true;
+
+		vec3f posWorld = chunkToWorld(chunk);	//chunk center
+		float chunkExt = std::max(std::max(m_voxelExtents.x, m_voxelExtents.y), m_voxelExtents.z);
+		float chunkRadius = 0.5f*chunkExt*sqrt(3.0f);
+
+		float l = (posWorld - center).length();
+		if (l <= std::abs(radius - chunkRadius)) {
+			return true;
 		}
-
-		return true;
+		else {
+			return false;
+		}
 	}
 
 	bool containsSDFBlocksChunkInRadius(const vec3i& chunk, int chunkRadius) {

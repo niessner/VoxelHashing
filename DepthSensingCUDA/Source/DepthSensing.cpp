@@ -1108,6 +1108,7 @@ int main(int argc, char** argv)
 			std::cout << "usage: DepthSensing [fileNameDescGlobalApp] [fileNameDescGlobalTracking]" << std::endl;
 			//fileNameDescGlobalApp = "zParametersDefault.txt";
 			fileNameDescGlobalApp = "zParametersManolisScan.txt";
+			
 			fileNameDescGlobalTracking = "zParametersTrackingDefault.txt";
 		}
 		std::cout << VAR_NAME(fileNameDescGlobalApp) << " = " << fileNameDescGlobalApp << std::endl;
@@ -1142,6 +1143,24 @@ int main(int argc, char** argv)
 		ParameterFile parameterFileGlobalTracking(fileNameDescGlobalTracking);
 		GlobalCameraTrackingState::getInstance().readMembers(parameterFileGlobalTracking);
 		//GlobalCameraTrackingState::getInstance().print();
+
+		{
+			//OVERWRITE streaming radius and streaming pose
+			auto& gas = GlobalAppState::get();
+
+			float chunkExt = std::max(std::max(gas.s_streamingVoxelExtents.x, gas.s_streamingVoxelExtents.y), gas.s_streamingVoxelExtents.z);
+			float chunkRadius = 0.5f*chunkExt*sqrt(3.0f);
+
+			float frustExt = gas.s_SDFMaxIntegrationDistance - gas.s_sensorDepthMin;
+			float frustRadius = 0.5f*frustExt*sqrt(3.0f);	//this assumes that the fov is less than 90 degree
+
+			gas.s_streamingPos = vec3f(0.0f, 0.0f, gas.s_sensorDepthMin + 0.5f*frustExt);
+			gas.s_streamingRadius = frustRadius + chunkRadius;
+
+			std::cout << "overwriting s_streamingPos,\t now " << gas.s_streamingPos << std::endl;
+			std::cout << "overwriting s_streamingRadius,\t now " << gas.s_streamingRadius << std::endl;
+		}
+
 
 		// Set DXUT callbacks
 		DXUTSetCallbackDeviceChanging(ModifyDeviceSettings);

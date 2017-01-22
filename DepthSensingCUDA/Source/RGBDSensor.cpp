@@ -338,6 +338,11 @@ void RGBDSensor::recordTrajectory(const mat4f& transform)
 
 void RGBDSensor::saveRecordedFramesToFile( const std::string& filename )
 {
+	const std::string path = util::directoryFromPath(filename);
+	if (!util::directoryExists(path)) {
+		util::makeDirectory(path);
+	}
+
 	if (m_bUseModernSensFilesForRecording) {
 		
 		if (!m_recordedDataCache || !m_recordedData) return;

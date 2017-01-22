@@ -1,5 +1,5 @@
 // 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense; 7=StructureSensor; 8=SensorDataReader
-s_sensorIdx = 8;
+s_sensorIdx = 0;
 
 //s_windowWidth = 1280;		//render window width
 //s_windowHeight = 960;		//render window height
@@ -40,9 +40,10 @@ s_SDFRayThresDistFactor = 50.0f;		//(don't touch) s_SDFRayThresDist = s_SDFRayTh
 s_SDFUseGradients 		= false;		//analytic gradients for rendering
 
 // .sens file input for offline processing (need to set s_sensorIdx accordingly)
-s_binaryDumpSensorFile[0] = "./DumpOutput/8194nk5LbLH_0.sens";
-s_binaryDumpSensorFile[1] = "./DumpOutput/8194nk5LbLH_1.sens";
-s_binaryDumpSensorFile[2] = "./DumpOutput/8194nk5LbLH_2.sens";
+//s_binaryDumpSensorFile[0] = "./DumpOutput/8194nk5LbLH_0.sens";
+//s_binaryDumpSensorFile[1] = "./DumpOutput/8194nk5LbLH_1.sens";
+//s_binaryDumpSensorFile[2] = "./DumpOutput/8194nk5LbLH_2.sens";
+s_binaryDumpSensorFile[0] = "Dump/test.sens";
 
 s_binaryDumpSensorUseTrajectory = true;
 s_binaryDumpSensorUseTrajectoryOnlyInit = false;	//only valid if prev is true; precomputed traj for ICP, which is run
@@ -75,14 +76,13 @@ s_lightDirection 		= 0.0f -1.0f 2.0f;
 
 s_RenderMode = 1;
 
-s_useColorForRendering		= false;
+s_useColorForRendering = false;
 s_playData = true;
 
 s_renderingDepthDiscontinuityThresOffset = 0.012f;	// discontinuity offset in meter
 s_renderingDepthDiscontinuityThresLin	 = 0.001f;	// additional discontinuity threshold per meter
 s_remappingDepthDiscontinuityThresOffset = 0.012f;	// discontinuity offset in meter
-//s_remappingDepthDiscontinuityThresLin	 = 0.001f;	// additional discontinuity threshold per meter
-s_remappingDepthDiscontinuityThresLin	 = 0.016f;
+s_remappingDepthDiscontinuityThresLin	 = 0.016f;	// additional discontinuity threshold per meter
 
 s_bUseCameraCalibration = false;
 							    
@@ -94,8 +94,8 @@ s_streamingVoxelExtents = 2.0f 2.0f 2.0f;
 s_streamingGridDimensions = 513 513 513; // dimensions have to be odd (number of samples)
 s_streamingMinGridPos = -256 -256 -256;
 s_streamingInitialChunkListSize = 2000;
-s_streamingRadius = 4.0f; // Depends on DepthMin and DepthMax 
-s_streamingPos = 0.0f 0.0f 3.0f 1.0f; // Depends on DepthMin and DepthMax
+s_streamingRadius = 4.0f; // Depends on DepthMin and DepthMax			WARNING: PARAMETER NOT USED; ARE COMPUTED AUTOMATICALLY
+s_streamingPos = 0.0f 0.0f 3.0f; // Depends on DepthMin and DepthMax	WARNING: PARAMETER NOT USED; ARE COMPUTED AUTOMATICALLY
 s_streamingOutParts = 80;	// number of frames required to sweep through the entire hash
 
 //recording of the input data
