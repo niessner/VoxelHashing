@@ -104,7 +104,7 @@ __global__ void rayIntervalSplatKernel(HashData hashData, DepthCameraData depthC
 
 	const HashEntry& entry = hashData.d_hashCompactified[idx];
 	if (entry.ptr != FREE_ENTRY) {
-		if (!hashData.isSDFBlockInCameraFrustumApprox(depthCameraData, entry.pos)) return;
+		if (!hashData.isSDFBlockInCameraFrustumApprox(entry.pos)) return;
 		const RayCastParams &params = c_rayCastParams;
 		const float4x4& viewMatrix = params.m_viewMatrix;
 

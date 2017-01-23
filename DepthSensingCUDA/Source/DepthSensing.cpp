@@ -652,7 +652,9 @@ void reconstruction()
 {
 	//only if binary dump
 	if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_BinaryDumpReader || GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader) {
-		std::cout << "[ frame " << g_RGBDAdapter.getFrameNumber() << " ] " << " [Free SDFBlocks " << g_sceneRep->getHeapFreeCount() << " ] " << std::endl;
+		unsigned int heapFreeCount = g_sceneRep->getHeapFreeCount();
+		std::cout << "[ frame " << g_RGBDAdapter.getFrameNumber() << " ] " << " [Free SDFBlocks " << heapFreeCount << " ] " << std::endl;
+		if (heapFreeCount < 5000) std::cout << "WARNING: Heap Free Count is low!  if crash, increase s_hashNumSDFBlocks" << std::endl;
 	}
 	
 	mat4f transformation = mat4f::identity();
@@ -1107,7 +1109,8 @@ int main(int argc, char** argv)
 		else {
 			std::cout << "usage: DepthSensing [fileNameDescGlobalApp] [fileNameDescGlobalTracking]" << std::endl;
 			//fileNameDescGlobalApp = "zParametersDefault.txt";
-			fileNameDescGlobalApp = "zParametersManolisScan.txt";
+			//fileNameDescGlobalApp = "zParametersManolisScan.txt";
+			fileNameDescGlobalApp = "zParametersMatterport.txt";
 			
 			fileNameDescGlobalTracking = "zParametersTrackingDefault.txt";
 		}

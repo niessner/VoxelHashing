@@ -104,6 +104,7 @@ struct HashData {
 		d_hashDecision = NULL;
 		d_hashDecisionPrefix = NULL;
 		d_hashCompactified = NULL;
+		d_hashCompactifiedCounter = NULL;
 		d_SDFBlocks = NULL;
 		d_hashBucketMutex = NULL;
 		m_bIsOnGPU = false;
@@ -119,6 +120,7 @@ struct HashData {
 			cutilSafeCall(cudaMalloc(&d_hashDecision, sizeof(int)* params.m_hashNumBuckets * params.m_hashBucketSize));
 			cutilSafeCall(cudaMalloc(&d_hashDecisionPrefix, sizeof(int)* params.m_hashNumBuckets * params.m_hashBucketSize));
 			cutilSafeCall(cudaMalloc(&d_hashCompactified, sizeof(HashEntry)* params.m_hashNumBuckets * params.m_hashBucketSize));
+			cutilSafeCall(cudaMalloc(&d_hashCompactifiedCounter, sizeof(int)));
 			cutilSafeCall(cudaMalloc(&d_SDFBlocks, sizeof(Voxel) * params.m_numSDFBlocks * params.m_SDFBlockSize*params.m_SDFBlockSize*params.m_SDFBlockSize));
 			cutilSafeCall(cudaMalloc(&d_hashBucketMutex, sizeof(int)* params.m_hashNumBuckets));
 		} else {
@@ -128,6 +130,7 @@ struct HashData {
 			d_hashDecision = new int[params.m_hashNumBuckets * params.m_hashBucketSize];
 			d_hashDecisionPrefix = new int[params.m_hashNumBuckets * params.m_hashBucketSize];
 			d_hashCompactified = new HashEntry[params.m_hashNumBuckets * params.m_hashBucketSize];
+			d_hashCompactifiedCounter = new int[1];
 			d_SDFBlocks = new Voxel[params.m_numSDFBlocks * params.m_SDFBlockSize*params.m_SDFBlockSize*params.m_SDFBlockSize];
 			d_hashBucketMutex = new int[params.m_hashNumBuckets];
 		}
@@ -151,6 +154,7 @@ struct HashData {
 			cutilSafeCall(cudaFree(d_hashDecision));
 			cutilSafeCall(cudaFree(d_hashDecisionPrefix));
 			cutilSafeCall(cudaFree(d_hashCompactified));
+			cutilSafeCall(cudaFree(d_hashCompactifiedCounter));
 			cutilSafeCall(cudaFree(d_SDFBlocks));
 			cutilSafeCall(cudaFree(d_hashBucketMutex));
 		} else {
@@ -160,6 +164,7 @@ struct HashData {
 			if (d_hashDecision) delete[] d_hashDecision;
 			if (d_hashDecisionPrefix) delete[] d_hashDecisionPrefix;
 			if (d_hashCompactified) delete[] d_hashCompactified;
+			if (d_hashCompactifiedCounter) delete[] d_hashCompactifiedCounter;
 			if (d_SDFBlocks) delete[] d_SDFBlocks;
 			if (d_hashBucketMutex) delete[] d_hashBucketMutex;
 		}
@@ -170,6 +175,7 @@ struct HashData {
 		d_hashDecision = NULL;
 		d_hashDecisionPrefix = NULL;
 		d_hashCompactified = NULL;
+		d_hashCompactifiedCounter = NULL;
 		d_SDFBlocks = NULL;
 		d_hashBucketMutex = NULL;
 	}
@@ -186,6 +192,7 @@ struct HashData {
 		cutilSafeCall(cudaMemcpy(hashData.d_hashDecision, d_hashDecision, sizeof(int)*params.m_hashNumBuckets * params.m_hashBucketSize, cudaMemcpyDeviceToHost));
 		cutilSafeCall(cudaMemcpy(hashData.d_hashDecisionPrefix, d_hashDecisionPrefix, sizeof(int)*params.m_hashNumBuckets * params.m_hashBucketSize, cudaMemcpyDeviceToHost));
 		cutilSafeCall(cudaMemcpy(hashData.d_hashCompactified, d_hashCompactified, sizeof(HashEntry)* params.m_hashNumBuckets * params.m_hashBucketSize, cudaMemcpyDeviceToHost));
+		cutilSafeCall(cudaMemcpy(hashData.d_hashCompactifiedCounter, d_hashCompactifiedCounter, sizeof(unsigned int), cudaMemcpyDeviceToHost));
 		cutilSafeCall(cudaMemcpy(hashData.d_SDFBlocks, d_SDFBlocks, sizeof(Voxel) * params.m_numSDFBlocks * params.m_SDFBlockSize*params.m_SDFBlockSize*params.m_SDFBlockSize, cudaMemcpyDeviceToHost));
 		cutilSafeCall(cudaMemcpy(hashData.d_hashBucketMutex, d_hashBucketMutex, sizeof(int)* params.m_hashNumBuckets, cudaMemcpyDeviceToHost));
 		
@@ -296,9 +303,9 @@ struct HashData {
 	}
 
 	__device__
-	bool isSDFBlockInCameraFrustumApprox(const DepthCameraData& depthCameraData, const int3& sdfBlock) {
+	bool isSDFBlockInCameraFrustumApprox(const int3& sdfBlock) {
 		float3 posWorld = virtualVoxelPosToWorld(SDFBlockToVirtualVoxelPos(sdfBlock)) + c_hashParams.m_virtualVoxelSize * 0.5f * (SDF_BLOCK_SIZE - 1.0f);
-		return depthCameraData.isInCameraFrustumApprox(c_hashParams.m_rigidTransformInverse, posWorld);
+		return DepthCameraData::isInCameraFrustumApprox(c_hashParams.m_rigidTransformInverse, posWorld);
 	}
 
 	//! computes the (local) virtual voxel pos of an index; idx in [0;511]
@@ -803,14 +810,15 @@ struct HashData {
 
 #endif	//CUDACC
 
-	uint*			d_heap;					//heap that manages free memory
-	uint*			d_heapCounter;			//single element; used as an atomic counter (points to the next free block)
-	int*			d_hashDecision;			//
-	int*			d_hashDecisionPrefix;	//
-	HashEntry*		d_hash;					//hash that stores pointers to sdf blocks
-	HashEntry*		d_hashCompactified;		//same as before except that only valid pointers are there
-	Voxel*			d_SDFBlocks;			//sub-blocks that contain 8x8x8 voxels (linearized); are allocated by heap
-	int*			d_hashBucketMutex;		//binary flag per hash bucket; used for allocation to atomically lock a bucket
+	uint*		d_heap;						//heap that manages free memory
+	uint*		d_heapCounter;				//single element; used as an atomic counter (points to the next free block)
+	int*		d_hashDecision;				//
+	int*		d_hashDecisionPrefix;		//
+	HashEntry*	d_hash;						//hash that stores pointers to sdf blocks
+	HashEntry*	d_hashCompactified;			//same as before except that only valid pointers are there
+	int*		d_hashCompactifiedCounter;	//atomic counter to add compactified entries atomically 
+	Voxel*		d_SDFBlocks;				//sub-blocks that contain 8x8x8 voxels (linearized); are allocated by heap
+	int*		d_hashBucketMutex;			//binary flag per hash bucket; used for allocation to atomically lock a bucket
 
-	bool			m_bIsOnGPU;				//the class be be used on both cpu and gpu
+	bool		m_bIsOnGPU;					//the class be be used on both cpu and gpu
 };

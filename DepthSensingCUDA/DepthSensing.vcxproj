@@ -210,7 +210,6 @@
     <ClCompile Include="Source\StdOutputLogger.cpp" />
     <ClCompile Include="Source\StructureSensor.cpp" />
     <ClCompile Include="Source\TimingLog.cpp" />
-    <ClCompile Include="Source\uplink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\BinaryDumpReader.h" />
@@ -232,6 +231,7 @@
     <ClInclude Include="Source\CUDAScan.h" />
     <ClInclude Include="Source\CUDASceneRepChunkGrid.h" />
     <ClInclude Include="Source\CUDASceneRepHashSDF.h" />
+    <ClInclude Include="Source\CUDATimer.h" />
     <ClInclude Include="Source\DepthCameraUtil.h" />
     <ClInclude Include="Source\DepthSensing.h" />
     <ClInclude Include="Source\DX11CustomRenderTarget.h" />
