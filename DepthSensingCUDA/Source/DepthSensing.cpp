@@ -790,8 +790,10 @@ void reconstruction()
 		if (GlobalAppState::get().s_offlineProcessing) {
 			for (unsigned int i = 0; i < GlobalAppState::get().s_streamingOutParts; i++) {
 				g_chunkGrid->streamOutToCPUPass0GPU(p, GlobalAppState::get().s_streamingRadius, g_chunkGrid->s_useParts, true);
-				g_chunkGrid->streamInToGPUPass1GPU(true);
 			}
+			//g_chunkGrid->streamInToGPUPass1GPU(true);
+			unsigned int nStreamedBlocks;		//this calls both streamInToGPUPass0GPU and streamInToGPUPass1GPU
+			g_chunkGrid->streamInToGPUAll(p, GlobalAppState::get().s_streamingRadius, g_chunkGrid->s_useParts, nStreamedBlocks);
 		}
 		else {
 			g_chunkGrid->streamOutToCPUPass0GPU(p, GlobalAppState::get().s_streamingRadius, g_chunkGrid->s_useParts, true);
@@ -966,6 +968,9 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	if (bGotDepth == S_OK) ObjectSensing::getInstance()->processFrame(g_sceneRep);
 #endif // OBJECT_SENSING
 
+	//debug
+	//if (g_RGBDAdapter.getFrameNumber() == 5) GlobalAppState::get().s_playData = false;
+
 	// for scannet
 	if (!GlobalAppState::get().s_playData && GlobalAppState::get().s_offlineProcessing) {
 		std::string filename = GlobalAppState::get().s_binaryDumpSensorFile[0];
@@ -1109,8 +1114,7 @@ int main(int argc, char** argv)
 		else {
 			std::cout << "usage: DepthSensing [fileNameDescGlobalApp] [fileNameDescGlobalTracking]" << std::endl;
 			//fileNameDescGlobalApp = "zParametersDefault.txt";
-			//fileNameDescGlobalApp = "zParametersManolisScan.txt";
-			fileNameDescGlobalApp = "zParametersMatterport.txt";
+			fileNameDescGlobalApp = "zParametersManolisScan.txt";
 			
 			fileNameDescGlobalTracking = "zParametersTrackingDefault.txt";
 		}

@@ -38,18 +38,48 @@ void CUDAMarchingCubesHashSDF::copyTrianglesToCPU() {
 
 	//std::cout << "Marching Cubes: #triangles = " << nTriangles << std::endl;
 
-	if (nTriangles != 0) {
-		unsigned int baseIdx = (unsigned int)m_meshData.m_Vertices.size();
-		m_meshData.m_Vertices.resize(baseIdx + 3 * nTriangles);
-		m_meshData.m_Colors.resize(baseIdx + 3 * nTriangles);
+	
+	if (!GlobalAppState::get().s_offlineProcessing) {
+		if (nTriangles != 0) {
+			unsigned int baseIdx = (unsigned int)m_meshData.m_Vertices.size();
+			m_meshData.m_Vertices.resize(baseIdx + 3 * nTriangles);
+			m_meshData.m_Colors.resize(baseIdx + 3 * nTriangles);
 
-		vec3f* vc = (vec3f*)cpuData.d_triangles;
-		for (unsigned int i = 0; i < 3 * nTriangles; i++) {
-			m_meshData.m_Vertices[baseIdx + i] = vc[2 * i + 0];
-			m_meshData.m_Colors[baseIdx + i] = vec4f(vc[2 * i + 1]);
+			vec3f* vc = (vec3f*)cpuData.d_triangles;
+			for (unsigned int i = 0; i < 3 * nTriangles; i++) {
+				m_meshData.m_Vertices[baseIdx + i] = vc[2 * i + 0];
+				m_meshData.m_Colors[baseIdx + i] = vec4f(vc[2 * i + 1]);
+			}
 		}
 	}
+	else {
+		//some sequences exhaust cpu memory... -> merge first
+		
+		if (nTriangles != 0) {
+			MeshDataf md;
 
+			md.m_Vertices.resize(3 * nTriangles);
+			md.m_Colors.resize(3 * nTriangles);
+
+			vec3f* vc = (vec3f*)cpuData.d_triangles;
+			for (unsigned int i = 0; i < 3 * nTriangles; i++) {
+				md.m_Vertices[i] = vc[2 * i + 0];
+				md.m_Colors[i] = vec4f(vc[2 * i + 1]);
+			}
+
+			//create index buffer (required for merging the triangle soup)
+			md.m_FaceIndicesVertices.resize(md.m_Vertices.size());
+			for (unsigned int i = 0; i < (unsigned int)md.m_Vertices.size() / 3; i++) {
+				md.m_FaceIndicesVertices[i][0] = 3 * i + 0;
+				md.m_FaceIndicesVertices[i][1] = 3 * i + 1;
+				md.m_FaceIndicesVertices[i][2] = 3 * i + 2;
+			}
+
+			md.mergeCloseVertices(0.0001f, true);
+			md.removeDuplicateFaces();
+			m_meshData.merge(md);
+		}
+	}
 	cpuData.free(); 
 }
 
@@ -59,7 +89,7 @@ void CUDAMarchingCubesHashSDF::saveMesh(const std::string& filename, const mat4f
 	std::string folder = util::directoryFromPath(filename);
 	if (!util::directoryExists(folder)) {
 		util::makeDirectory(folder);
-	}
+	} 
 
 	std::string actualFilename = filename;
 	if (!overwriteExistingFile) {
@@ -78,18 +108,20 @@ void CUDAMarchingCubesHashSDF::saveMesh(const std::string& filename, const mat4f
 	}
 
 	//create index buffer (required for merging the triangle soup)
-	m_meshData.m_FaceIndicesVertices.resize(m_meshData.m_Vertices.size());
-	for (unsigned int i = 0; i < (unsigned int)m_meshData.m_Vertices.size() / 3; i++) {
-		m_meshData.m_FaceIndicesVertices[i][0] = 3 * i + 0;
-		m_meshData.m_FaceIndicesVertices[i][1] = 3 * i + 1;
-		m_meshData.m_FaceIndicesVertices[i][2] = 3 * i + 2;
+	if (!m_meshData.hasVertexIndices()) {
+		m_meshData.m_FaceIndicesVertices.resize(m_meshData.m_Vertices.size());
+		for (unsigned int i = 0; i < (unsigned int)m_meshData.m_Vertices.size() / 3; i++) {
+			m_meshData.m_FaceIndicesVertices[i][0] = 3 * i + 0;
+			m_meshData.m_FaceIndicesVertices[i][1] = 3 * i + 1;
+			m_meshData.m_FaceIndicesVertices[i][2] = 3 * i + 2;
+		}
 	}
 	std::cout << "size before:\t" << m_meshData.m_Vertices.size() << std::endl;
 
 	//m_meshData.removeDuplicateVertices();
 	//m_meshData.mergeCloseVertices(0.00001f);
 	std::cout << "merging close vertices... ";
-	m_meshData.mergeCloseVertices(0.00001f, true);
+	m_meshData.mergeCloseVertices(0.0001f, true);
 	std::cout << "done!" << std::endl;
 	std::cout << "removing duplicate faces... ";
 	m_meshData.removeDuplicateFaces();

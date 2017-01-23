@@ -159,7 +159,7 @@ public:
 		m_currentPart = 0;
 		m_streamOutParts = streamOutParts;
 
-		m_maxNumberOfSDFBlocksIntegrateFromGlobalHash = 300000;
+		m_maxNumberOfSDFBlocksIntegrateFromGlobalHash = 100000;
 		//m_maxNumberOfSDFBlocksIntegrateFromGlobalHash = GlobalAppState::get().s_hashNumSDFBlocks / GlobalAppState::get().s_streamingOutParts;
 
 		h_SDFBlockDescOutput = NULL;

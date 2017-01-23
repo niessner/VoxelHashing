@@ -9,15 +9,16 @@ LONG WINAPI StreamingFunc(LPVOID lParam) {
 	CUDASceneRepChunkGrid* chunkGrid = (CUDASceneRepChunkGrid*)lParam;
 
 	while (true)	{
-		//std::cout <<" Shouldnt run" << std::endl;
 		HRESULT hr = S_OK;
 
 		chunkGrid->streamOutToCPUPass1CPU(true);
 
-		bool useParts = CUDASceneRepChunkGrid::s_useParts;
-		if (GlobalAppState::get().s_offlineProcessing) useParts = false;	// needs to overwrite for streaming back to the GPU
+		if (!GlobalAppState::get().s_offlineProcessing) {		//Don't use the CPU-to-GPU streaming if offline mode; it's called in the main thread then
+			bool useParts = CUDASceneRepChunkGrid::s_useParts;
+			if (GlobalAppState::get().s_offlineProcessing) useParts = false;	// needs to overwrite for streaming back to the GPU
 
-		chunkGrid->streamInToGPUPass0CPU(chunkGrid->getPosCamera(), chunkGrid->getRadius(), useParts, true);
+			chunkGrid->streamInToGPUPass0CPU(chunkGrid->getPosCamera(), chunkGrid->getRadius(), useParts, true);
+		}
 
 		if (chunkGrid->getTerminatedThread()) {
 			return 0;
@@ -78,12 +79,13 @@ void CUDASceneRepChunkGrid::streamOutToCPUPass0GPU(const vec3f& posCamera, float
 	integrateFromGlobalHashPass1CUDA(m_sceneRepHashSDF->getHashParams(), m_sceneRepHashSDF->getHashData(), threadsPerPart, start, radius, MatrixConversion::toCUDA(posCamera), d_SDFBlockCounter, d_SDFBlockDescOutput);
 
 	const unsigned int nSDFBlockDescs = getSDFBlockCounter();
+	if (nSDFBlockDescs >= m_maxNumberOfSDFBlocksIntegrateFromGlobalHash) throw MLIB_EXCEPTION("not enough memory allocated for intermediate GPU buffer (wants to stream out more block than m_maxNumberOfSDFBlocksIntegrateFromGlobalHash)");
 
 	if (useParts) m_currentPart = (m_currentPart+1) % m_streamOutParts;
 
 	if (nSDFBlockDescs != 0) {
 		//std::cout << "SDFBlocks streamed out: " << nSDFBlockDescs << std::endl;
-
+		 
 		//-------------------------------------------------------
 		// Pass 2: Copy SDFBlocks to output buffer
 		//-------------------------------------------------------
@@ -162,8 +164,7 @@ void CUDASceneRepChunkGrid::streamInToGPUAll(const vec3f& posCamera, float radiu
 {
 	unsigned int nStreamedBlocksSum = 0;
 	unsigned int nBlock = 1;
-	while (nBlock != 0) // Should not be necessary
-	{
+	while (nBlock != 0) {
 		streamInToGPU(posCamera, radius, useParts, nBlock);
 		nStreamedBlocksSum += nBlock;
 	}
@@ -209,7 +210,7 @@ void CUDASceneRepChunkGrid::streamInToGPUPass0CPU( const vec3f& posCamera, float
 	if (multiThreaded) {
 		WaitForSingleObject(hEventInProduce, INFINITE);
 		WaitForSingleObject(hMutexIn, INFINITE);
-		if (s_terminateThread)	return;	//avoid duplicate insertions when stop multithreading is called
+		if (s_terminateThread)	return;	//avoid duplicate insertions when stop multi-threading is called
 	}
 
 	unsigned int nSDFBlockDescs = integrateInHash(posCamera, radius, useParts);
@@ -255,6 +256,7 @@ void CUDASceneRepChunkGrid::streamInToGPUPass1GPU( bool multiThreaded /*= true*/
 		unsigned int initialCountNew = heapCountPrev-s_nStreamdInBlocks;
 		MLIB_CUDA_SAFE_CALL(cudaMemcpy(m_sceneRepHashSDF->getHashData().d_heapCounter, &initialCountNew, sizeof(unsigned int), cudaMemcpyHostToDevice));
 
+		//crash here at frame 1297 TODO
 	}
 
 	if (multiThreaded) {
@@ -285,7 +287,7 @@ unsigned int CUDASceneRepChunkGrid::integrateInHash( const vec3f& posCamera, flo
 					{
 						unsigned int nBlock = m_grid[index]->getNElements();
 						if (nBlock + nSDFBlocks > m_maxNumberOfSDFBlocksIntegrateFromGlobalHash) {
-							throw MLIB_EXCEPTION("not enough memory allocated for intermediate GPU buffer");
+							throw MLIB_EXCEPTION("not enough memory allocated for intermediate GPU buffer (wants to stream out more block than m_maxNumberOfSDFBlocksIntegrateFromGlobalHash)");
 						}
 						// Copy data to GPU
 						MLIB_CUDA_SAFE_CALL(cudaMemcpy(d_SDFBlockDescInput + nSDFBlocks, &(m_grid[index]->getSDFBlockDescs()[0]), sizeof(SDFBlockDesc)*nBlock, cudaMemcpyHostToDevice));
