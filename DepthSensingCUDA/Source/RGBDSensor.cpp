@@ -147,7 +147,7 @@ void RGBDSensor::initializeDepthExtrinsics(const mat4f& m) {
 	m_depthExtrinsicsInv = m.getInverse();
 	std::cout << "depth extrinsics" << std::endl << m_depthExtrinsics << std::endl;
 
-	if (m_depthExtrinsics != mat4f::identity() && GlobalAppState::get().s_bUseCameraCalibration) {
+	if (m_depthExtrinsics == mat4f::identity() && GlobalAppState::get().s_bUseCameraCalibration) {
 		std::cout << "Warning: forcing s_bUseCameraCalibration to be false because the m_depthExtrinsics are the identity (i.e., already aligned)" << std::endl;
 		GlobalAppState::get().s_bUseCameraCalibration = false;	//already aligned -- overwrite parameter file
 	}
