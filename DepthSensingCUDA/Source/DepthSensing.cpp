@@ -974,7 +974,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	// for scannet
 	if (!GlobalAppState::get().s_playData && GlobalAppState::get().s_offlineProcessing) {
 		std::string filename = GlobalAppState::get().s_binaryDumpSensorFile[0];
-		filename = ml::util::removeExtensions(filename) + "_sh.ply";
+		filename = ml::util::removeExtensions(filename) + "_vh.ply";
 		StopScanningAndExtractIsoSurfaceMC(filename, true);
 		exit(0);
 	}
@@ -1183,7 +1183,8 @@ int main(int argc, char** argv)
 		DXUTSetCallbackD3D11DeviceDestroyed(OnD3D11DestroyDevice);
 
 		InitApp();
-		DXUTInit(true, true); // Parse the command line, show msgboxes on error, and an extra cmd line param to force REF for now
+		bool bShowMsgBoxOnError = false;
+		DXUTInit(true, bShowMsgBoxOnError); // Parse the command line, show msgboxes on error, and an extra cmd line param to force REF for now
 		DXUTSetCursorSettings(true, true); // Show the cursor and clip it when in full screen
 		DXUTCreateWindow(GlobalAppState::get().s_windowWidth, GlobalAppState::get().s_windowHeight, L"VoxelHashing", false);
 
