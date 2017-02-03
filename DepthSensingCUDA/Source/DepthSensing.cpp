@@ -650,6 +650,7 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 
 void reconstruction()
 {
+
 	//only if binary dump
 	if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_BinaryDumpReader || GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader) {
 		unsigned int heapFreeCount = g_sceneRep->getHeapFreeCount();
@@ -844,6 +845,25 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	ID3D11DepthStencilView* pDSV = DXUTGetD3D11DepthStencilView();
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
 	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+#ifdef SENSOR_DATA_READER
+	//only if sensor data reader
+	if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader && GlobalAppState::get().s_playData) {
+		const SensorDataReader* sensor = (SensorDataReader*)getRGBDSensor();
+
+		if (sensor->getCurrFrame() >= sensor->getNumFrames() && sensor->getCurrSensFileIdx() + 1 < GlobalAppState::get().s_binaryDumpSensorFile.size()) {
+			//recreate adapter and cuda sensor to use new intrinsics
+			g_RGBDAdapter.OnD3D11DestroyDevice();
+			g_CudaDepthSensor.OnD3D11DestroyDevice();
+			SAFE_DELETE(g_rayCast);
+
+			g_RGBDAdapter.OnD3D11CreateDevice(DXUTGetD3D11Device(), getRGBDSensor(), GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight);
+			g_CudaDepthSensor.OnD3D11CreateDevice(DXUTGetD3D11Device(), &g_RGBDAdapter);
+			g_rayCast = new CUDARayCastSDF(CUDARayCastSDF::parametersFromGlobalAppState(GlobalAppState::get(), g_RGBDAdapter.getColorIntrinsics(), g_RGBDAdapter.getColorIntrinsicsInv()));
+			g_sceneRep->bindDepthCameraTextures(g_CudaDepthSensor.getDepthCameraData());
+		}
+	}
+#endif
 
 	// if we have received any valid new depth data we may need to draw
 	HRESULT bGotDepth = g_CudaDepthSensor.process(pd3dImmediateContext);

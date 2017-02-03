@@ -101,7 +101,6 @@ public:
 
 	virtual void startReceivingFrames() {}
 	virtual void stopReceivingFrames() {}
-
 protected:
 
 	unsigned int m_currentRingBufIdx;

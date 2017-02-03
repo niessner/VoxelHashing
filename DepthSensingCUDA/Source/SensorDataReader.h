@@ -19,7 +19,6 @@ namespace ml {
 class SensorDataReader : public RGBDSensor
 {
 public:
-
 	//! Constructor
 	SensorDataReader();
 
@@ -42,9 +41,18 @@ public:
 
 	mat4f getRigidTransform(int offset) const;
 
-
 	const SensorData* getSensorData() const {
 		return m_sensorData;
+	}
+
+	unsigned int getNumFrames() const {
+		return m_numFrames;
+	}
+	unsigned int getCurrFrame() const {
+		return m_currFrame;
+	}
+	unsigned int getCurrSensFileIdx() const {
+		return m_currSensFileIdx;
 	}
 private:
 	//! deletes all allocated data

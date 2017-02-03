@@ -67,11 +67,11 @@ CUDARGBDSensor::CUDARGBDSensor()
 
 CUDARGBDSensor::~CUDARGBDSensor()
 {
-	m_depthCameraData.free();
+	
 }
 
-void CUDARGBDSensor::OnD3D11DestroyDevice() 
-{	
+void CUDARGBDSensor::OnD3D11DestroyDevice()
+{
 	// depth
 	cutilSafeCall(cudaFree(d_depthMapFilteredFloat));
 	cutilSafeCall(cudaFree(d_cameraSpaceFloat4));
@@ -89,6 +89,8 @@ void CUDARGBDSensor::OnD3D11DestroyDevice()
 
 	g_RGBDRenderer.OnD3D11DestroyDevice();
 	g_CustomRenderTarget.OnD3D11DestroyDevice();
+
+	m_depthCameraData.free();
 }
 
 HRESULT CUDARGBDSensor::OnD3D11CreateDevice(ID3D11Device* device, CUDARGBDAdapter* CUDARGBDAdapter)
@@ -103,10 +105,10 @@ HRESULT CUDARGBDSensor::OnD3D11CreateDevice(ID3D11Device* device, CUDARGBDAdapte
 	const unsigned int bufferDimColor = m_RGBDAdapter->getWidth()*m_RGBDAdapter->getHeight();
 
 	cutilSafeCall(cudaMalloc(&d_depthMapFilteredFloat, sizeof(float)*bufferDimDepth));
-	cutilSafeCall(cudaMalloc(&d_cameraSpaceFloat4, 4*sizeof(float)*bufferDimDepth));
-	
+	cutilSafeCall(cudaMalloc(&d_cameraSpaceFloat4, 4 * sizeof(float)*bufferDimDepth));
+
 	// normal
-	cutilSafeCall(cudaMalloc(&d_normalMapFloat4, 4*sizeof(float)*bufferDimColor));
+	cutilSafeCall(cudaMalloc(&d_normalMapFloat4, 4 * sizeof(float)*bufferDimColor));
 
 	// intensity
 	cutilSafeCall(cudaMalloc(&d_intensityMapFilteredFloat, sizeof(float)*bufferDimColor));
@@ -125,10 +127,10 @@ HRESULT CUDARGBDSensor::OnD3D11CreateDevice(ID3D11Device* device, CUDARGBDAdapte
 	V_RETURN(g_RGBDRenderer.OnD3D11CreateDevice(device, GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight));
 	V_RETURN(g_CustomRenderTarget.OnD3D11CreateDevice(device, GlobalAppState::get().s_adapterWidth, GlobalAppState::get().s_adapterHeight, formats));
 
-	m_depthCameraParams.fx = m_RGBDAdapter->getDepthIntrinsics()(0,0);
-	m_depthCameraParams.fy = m_RGBDAdapter->getDepthIntrinsics()(1,1);
-	m_depthCameraParams.mx = m_RGBDAdapter->getDepthIntrinsics()(0,2);	
-	m_depthCameraParams.my = m_RGBDAdapter->getDepthIntrinsics()(1,2);
+	m_depthCameraParams.fx = m_RGBDAdapter->getDepthIntrinsics()(0, 0);
+	m_depthCameraParams.fy = m_RGBDAdapter->getDepthIntrinsics()(1, 1);
+	m_depthCameraParams.mx = m_RGBDAdapter->getDepthIntrinsics()(0, 2);
+	m_depthCameraParams.my = m_RGBDAdapter->getDepthIntrinsics()(1, 2);
 	m_depthCameraParams.m_sensorDepthWorldMin = GlobalAppState::get().s_sensorDepthMin;
 	m_depthCameraParams.m_sensorDepthWorldMax = GlobalAppState::get().s_sensorDepthMax;
 	m_depthCameraParams.m_imageHeight = m_RGBDAdapter->getHeight();
@@ -137,7 +139,7 @@ HRESULT CUDARGBDSensor::OnD3D11CreateDevice(ID3D11Device* device, CUDARGBDAdapte
 	m_depthCameraData.alloc(m_depthCameraParams);
 
 	return hr;
-} 
+}
 
 HRESULT CUDARGBDSensor::process(ID3D11DeviceContext* context)
 {
@@ -163,26 +165,26 @@ HRESULT CUDARGBDSensor::process(ID3D11DeviceContext* context)
 	////////////////////////////////////////////////////////////////////////////////////
 
 	//Start Timing
-	if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.start(); }
+	if (GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.start(); }
 
-	if(m_bFilterDepthValues) gaussFilterFloatMap(d_depthMapFilteredFloat, m_RGBDAdapter->getDepthMapResampledFloat(), m_fBilateralFilterSigmaD, m_fBilateralFilterSigmaR, m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight());
+	if (m_bFilterDepthValues) gaussFilterFloatMap(d_depthMapFilteredFloat, m_RGBDAdapter->getDepthMapResampledFloat(), m_fBilateralFilterSigmaD, m_fBilateralFilterSigmaR, m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight());
 	else					 copyFloatMap(d_depthMapFilteredFloat, m_RGBDAdapter->getDepthMapResampledFloat(), m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight());
 
 	//TODO this call seems not needed as the depth map is overwriten later anyway later anyway...
 	setInvalidFloatMap(m_depthCameraData.d_depthData, m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight());
 
 	// Stop Timing
-	if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.stop(); TimingLog::totalTimeFilterDepth += m_timer.getElapsedTimeMS(); TimingLog::countTimeFilterDepth++; }
+	if (GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.stop(); TimingLog::totalTimeFilterDepth += m_timer.getElapsedTimeMS(); TimingLog::countTimeFilterDepth++; }
 
 	////////////////////////////////////////////////////////////////////////////////////
 	// Render to Color Space
 	////////////////////////////////////////////////////////////////////////////////////
 
 	//Start Timing
-	if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.start(); }
+	if (GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.start(); }
 
-	if(GlobalAppState::get().s_bUseCameraCalibration)
-	{	
+	if (GlobalAppState::get().s_bUseCameraCalibration)
+	{
 		mat4f depthExt = m_RGBDAdapter->getDepthExtrinsics();
 
 		g_CustomRenderTarget.Clear(context);
@@ -209,18 +211,19 @@ HRESULT CUDARGBDSensor::process(ID3D11DeviceContext* context)
 	if (bErode) {
 		unsigned int numIter = 20;
 
-		numIter = 2 * ((numIter + 1)/2);
+		numIter = 2 * ((numIter + 1) / 2);
 		for (unsigned int i = 0; i < numIter; i++) {
 			if (i % 2 == 0) {
 				erodeDepthMap(d_depthErodeHelper, m_depthCameraData.d_depthData, 5, getDepthWidth(), getDepthHeight(), 0.05f, 0.3f);
-			} else {
+			}
+			else {
 				erodeDepthMap(m_depthCameraData.d_depthData, d_depthErodeHelper, 5, getDepthWidth(), getDepthHeight(), 0.05f, 0.3f);
 			}
 		}
 	}
 
 	//TODO check whether the intensity is actually used
-	convertColorToIntensityFloat(d_intensityMapFilteredFloat, m_depthCameraData.d_colorData,  m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight());
+	convertColorToIntensityFloat(d_intensityMapFilteredFloat, m_depthCameraData.d_colorData, m_RGBDAdapter->getWidth(), m_RGBDAdapter->getHeight());
 
 
 	float4x4 M((m_RGBDAdapter->getColorIntrinsicsInv()).ptr());
@@ -233,7 +236,7 @@ HRESULT CUDARGBDSensor::process(ID3D11DeviceContext* context)
 	cudaMemcpyToArray(m_depthCameraData.d_colorArray, 0, 0, m_depthCameraData.d_colorData, sizeof(float4)*m_depthCameraParams.m_imageHeight*m_depthCameraParams.m_imageWidth, cudaMemcpyDeviceToDevice);
 
 	// Stop Timing
-	if(GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.stop(); TimingLog::totalTimeRemapDepth += m_timer.getElapsedTimeMS(); TimingLog::countTimeRemapDepth++; }
+	if (GlobalAppState::get().s_timingsDetailledEnabled) { cutilSafeCall(cudaDeviceSynchronize()); m_timer.stop(); TimingLog::totalTimeRemapDepth += m_timer.getElapsedTimeMS(); TimingLog::countTimeRemapDepth++; }
 
 	return hr;
 }
@@ -255,22 +258,22 @@ void CUDARGBDSensor::setFiterIntensityValues(bool b, float sigmaD, float sigmaR)
 
 bool CUDARGBDSensor::checkValidT1(unsigned int x, unsigned int y, unsigned int W, float4* h_cameraSpaceFloat4)
 {
-	return		(h_cameraSpaceFloat4[y*W+x].z != 0.0 && h_cameraSpaceFloat4[(y+1)*W+x].z != 0.0 && h_cameraSpaceFloat4[y*W+x+1].z != 0.0)
-		&&  (h_cameraSpaceFloat4[y*W+x].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[(y+1)*W+x].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[y*W+x+1].z != -std::numeric_limits<float>::infinity())
-		&&  (h_cameraSpaceFloat4[y*W+x].z > GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[(y+1)*W+x].z > GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[y*W+x+1].z > GlobalAppState::get().s_sensorDepthMin)
-		&&  (h_cameraSpaceFloat4[y*W+x].z < GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[(y+1)*W+x].z < GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[y*W+x+1].z < GlobalAppState::get().s_sensorDepthMax)
-		&&  (fabs(h_cameraSpaceFloat4[y*W+x].x) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y+1)*W+x].x) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W+x+1].x) < GlobalAppState::get().s_sensorDepthMax)
-		&&  (fabs(h_cameraSpaceFloat4[y*W+x].y) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y+1)*W+x].y) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W+x+1].y) < GlobalAppState::get().s_sensorDepthMax);
+	return		(h_cameraSpaceFloat4[y*W + x].z != 0.0 && h_cameraSpaceFloat4[(y + 1)*W + x].z != 0.0 && h_cameraSpaceFloat4[y*W + x + 1].z != 0.0)
+		&& (h_cameraSpaceFloat4[y*W + x].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[(y + 1)*W + x].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[y*W + x + 1].z != -std::numeric_limits<float>::infinity())
+		&& (h_cameraSpaceFloat4[y*W + x].z > GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[(y + 1)*W + x].z > GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[y*W + x + 1].z > GlobalAppState::get().s_sensorDepthMin)
+		&& (h_cameraSpaceFloat4[y*W + x].z < GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[(y + 1)*W + x].z < GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[y*W + x + 1].z < GlobalAppState::get().s_sensorDepthMax)
+		&& (fabs(h_cameraSpaceFloat4[y*W + x].x) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y + 1)*W + x].x) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W + x + 1].x) < GlobalAppState::get().s_sensorDepthMax)
+		&& (fabs(h_cameraSpaceFloat4[y*W + x].y) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y + 1)*W + x].y) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W + x + 1].y) < GlobalAppState::get().s_sensorDepthMax);
 }
 
 bool CUDARGBDSensor::checkValidT2(unsigned int x, unsigned int y, unsigned int W, float4* h_cameraSpaceFloat4)
 {
-	return		(h_cameraSpaceFloat4[(y+1)*W+x].z != 0.0 && h_cameraSpaceFloat4[(y+1)*W+(x+1)].z != 0.0 && h_cameraSpaceFloat4[y*W+x+1].z != 0.0)
-		&&  (h_cameraSpaceFloat4[(y+1)*W+x].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[(y+1)*W+(x+1)].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[y*W+x+1].z != -std::numeric_limits<float>::infinity())
-		&&  (h_cameraSpaceFloat4[(y+1)*W+x].z >  GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[(y+1)*W+(x+1)].z >  GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[y*W+x+1].z >  GlobalAppState::get().s_sensorDepthMin)
-		&&  (h_cameraSpaceFloat4[(y+1)*W+x].z <  GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[(y+1)*W+(x+1)].z <  GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[y*W+x+1].z <  GlobalAppState::get().s_sensorDepthMax)
-		&&  (fabs(h_cameraSpaceFloat4[(y+1)*W+x].x) <  GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y+1)*W+(x+1)].x) <  GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W+x+1].x) <  GlobalAppState::get().s_sensorDepthMax)
-		&&  (fabs(h_cameraSpaceFloat4[(y+1)*W+x].y) <  GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y+1)*W+(x+1)].y) <  GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W+x+1].y) <  GlobalAppState::get().s_sensorDepthMax);
+	return		(h_cameraSpaceFloat4[(y + 1)*W + x].z != 0.0 && h_cameraSpaceFloat4[(y + 1)*W + (x + 1)].z != 0.0 && h_cameraSpaceFloat4[y*W + x + 1].z != 0.0)
+		&& (h_cameraSpaceFloat4[(y + 1)*W + x].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[(y + 1)*W + (x + 1)].z != -std::numeric_limits<float>::infinity() && h_cameraSpaceFloat4[y*W + x + 1].z != -std::numeric_limits<float>::infinity())
+		&& (h_cameraSpaceFloat4[(y + 1)*W + x].z > GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[(y + 1)*W + (x + 1)].z > GlobalAppState::get().s_sensorDepthMin && h_cameraSpaceFloat4[y*W + x + 1].z > GlobalAppState::get().s_sensorDepthMin)
+		&& (h_cameraSpaceFloat4[(y + 1)*W + x].z < GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[(y + 1)*W + (x + 1)].z < GlobalAppState::get().s_sensorDepthMax && h_cameraSpaceFloat4[y*W + x + 1].z < GlobalAppState::get().s_sensorDepthMax)
+		&& (fabs(h_cameraSpaceFloat4[(y + 1)*W + x].x) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y + 1)*W + (x + 1)].x) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W + x + 1].x) < GlobalAppState::get().s_sensorDepthMax)
+		&& (fabs(h_cameraSpaceFloat4[(y + 1)*W + x].y) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[(y + 1)*W + (x + 1)].y) < GlobalAppState::get().s_sensorDepthMax && fabs(h_cameraSpaceFloat4[y*W + x + 1].y) < GlobalAppState::get().s_sensorDepthMax);
 }
 
 float4* CUDARGBDSensor::getCameraSpacePositionsFloat4()
