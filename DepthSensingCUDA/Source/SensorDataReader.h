@@ -54,6 +54,8 @@ public:
 	unsigned int getCurrSensFileIdx() const {
 		return m_currSensFileIdx;
 	}
+
+	void loadNextSensFile();
 private:
 	//! deletes all allocated data
 	void releaseData();

@@ -76,10 +76,12 @@ HRESULT SensorDataReader::createFirstConnected()
 	return S_OK;
 }
 
-HRESULT SensorDataReader::processDepth()
-{
-	if (m_currFrame >= m_numFrames)
-	{
+void SensorDataReader::loadNextSensFile() {
+	if (!GlobalAppState::get().s_playData) return;
+
+	if (m_currFrame >= m_numFrames)	{
+		std::cout << "Loading new sens file!" << std::endl;
+
 		if (m_currSensFileIdx + 1 < GlobalAppState::get().s_binaryDumpSensorFile.size()) {
 			m_currSensFileIdx++;
 			createFirstConnected();
@@ -91,6 +93,24 @@ HRESULT SensorDataReader::processDepth()
 			m_currFrame = 0;
 		}
 	}
+
+}
+
+HRESULT SensorDataReader::processDepth()
+{
+	//if (m_currFrame >= m_numFrames)
+	//{
+	//	if (m_currSensFileIdx + 1 < GlobalAppState::get().s_binaryDumpSensorFile.size()) {
+	//		m_currSensFileIdx++;
+	//		createFirstConnected();
+	//		//in case we have more .sens files specified
+	//	}
+	//	else {
+	//		GlobalAppState::get().s_playData = false;
+	//		std::cout << "binary dump sequence complete - press space to run again" << std::endl;
+	//		m_currFrame = 0;
+	//	}
+	//}
 
 	if (GlobalAppState::get().s_playData) {
 
