@@ -523,7 +523,7 @@ public:
 
 	//! todo check this
 	bool isEmpty() const {
-		return m_Vertices.size() == 0 && m_FaceIndicesVertices.size() == 0;
+		return m_Vertices.size() == 0;
 	}
 
 	//! merges two meshes (assumes the same memory layout/type)
