@@ -77,7 +77,8 @@ void CUDAMarchingCubesHashSDF::copyTrianglesToCPU() {
 
 			md.mergeCloseVertices(0.0001f, true);
 			md.removeDuplicateFaces();
-			m_meshData.merge(md);
+			if (md.m_FaceIndicesVertices.size() > 0)
+				m_meshData.merge(md);
 		}
 	}
 	cpuData.free(); 
