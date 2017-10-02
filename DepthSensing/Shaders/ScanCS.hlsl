@@ -50,6 +50,7 @@ void CSScan(uint3 DTid, uint GI, int x)
 	uint lane = GI & 31u;
 	uint warp = GI >> 5u;
  
+	GroupMemoryBarrierWithGroupSync(); // <<<<<<<<<<
 	x = CSWarpScan(lane, GI);
 	GroupMemoryBarrierWithGroupSync();
 
