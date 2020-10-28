@@ -8,6 +8,7 @@
 //#define REAL_SENSE
 //#define STRUCTURE_SENSOR
 #define SENSOR_DATA_READER
+#define SENSOR_DATA_FILE_READER
 
 //#define OBJECT_SENSING
 
@@ -97,7 +98,9 @@
 	X(bool, s_reconstructionEnabled) \
 	X(bool, s_renderToFile) \
 	X(std::string, s_renderToFileDir) \
-	X(bool, s_offlineProcessing)
+	X(bool, s_offlineProcessing) \
+	X(int, s_nVideoFrame) \
+	X(int, s_startFrame)
 
 
 #ifndef VAR_NAME
@@ -119,7 +122,8 @@ public:
 		Sensor_IntelSensor = 5,
 		Sensor_RealSense = 6,
 		Sensor_StructureSensor = 7,
-		Sensor_SensorDataReader = 8
+		Sensor_SensorDataReader = 8,
+		Sensor_SensorDataFileReader = 9
 	};
 
 #define X(type, name) type name;

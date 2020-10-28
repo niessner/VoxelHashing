@@ -185,6 +185,13 @@ namespace ml {
 				m_extrinsic.setIdentity();
 			}
 
+			void setMatrices(mat4f& intrinsic, mat4f& extrinsic = mat4f::identity()) {
+				m_intrinsic = intrinsic;
+				m_extrinsic = extrinsic;
+				//m_intr = m_intrinsic.getInverse();
+				//m_ExtrinsicInverse = m_extrinsic.getInverse();
+			}
+
 			void saveToFile(std::ofstream& out) const {
 				out.write((const char*)&m_intrinsic, sizeof(mat4f));
 				out.write((const char*)&m_extrinsic, sizeof(mat4f));
@@ -281,6 +288,7 @@ namespace ml {
 
 		private:
 			friend class SensorData;
+			friend class SensorDataZhou;
 
 			RGBDFrame(
 				const vec3uc* color, unsigned int colorWidth, unsigned int colorHeight,
@@ -1222,6 +1230,31 @@ namespace ml {
 				return FrameState();
 			}
 
+			FrameState getNextOurs() {
+				while (1) {
+					//if (m_nextFromSensorCache >= m_sensorData->m_frames.size()) {
+					//	m_bTerminateThread = true;	// should be already true anyway
+					//	break; //we're done
+					//}
+					if (m_data.size() > 0 && m_data.front().m_bIsReady) {
+						m_mutexList.lock();
+						FrameState fs = m_data.front();
+						m_data.erase(m_data.begin());
+						m_mutexList.unlock();
+						m_nextFromSensorCache++;
+						return fs;
+					}
+					else {
+						Sleep(0);
+					}
+				}
+				return FrameState();
+			}
+
+			bool getCheck() {
+				return check;
+			}
+
 		private:
 			void startDecompBackgroundThread() {
 				m_decompThread = std::thread(decompFunc, this);
@@ -1257,6 +1290,8 @@ namespace ml {
 			std::thread m_decompThread;
 			std::mutex m_mutexList;
 			std::atomic<bool> m_bTerminateThread;
+
+			bool check;
 
 			unsigned int m_nextFromSensorData;
 			unsigned int m_nextFromSensorCache;

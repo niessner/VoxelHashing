@@ -167,6 +167,12 @@
     <ClCompile Include="Source\StructureSensor.cpp">
       <Filter>Sensors</Filter>
     </ClCompile>
+    <ClCompile Include="Source\sensordatazhou.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SensorDataReaderZhou.cpp">
+      <Filter>Sensors</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\CameraParams.h" />
@@ -332,6 +338,12 @@
     </ClInclude>
     <ClInclude Include="Source\CUDATimer.h">
       <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\sensordatazhou.h">
+      <Filter>Sensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SensorDataReaderZhou.h">
+      <Filter>Sensors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

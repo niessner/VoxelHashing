@@ -1,5 +1,11 @@
-// 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense; 7=StructureSensor; 8=SensorDataReader
-s_sensorIdx = 0;
+// 0=Kinect; 1=PrimeSense; 2=KinectOne; 3=BinaryDumpReader; 4=NetworkSensor; 5=IntelSensor; 6=RealSense; 7=StructureSensor; 8=SensorDataReader; 9=SensorDataFileReader
+s_sensorIdx = 9;
+
+
+// used when we use record files
+s_nVideoFrame = 587;
+//s_nVideoFrame = 0;
+s_startFrame = 0;
 
 //s_windowWidth = 1280;		//render window width
 //s_windowHeight = 960;		//render window height
@@ -43,7 +49,8 @@ s_SDFUseGradients 		= false;		//analytic gradients for rendering
 //s_binaryDumpSensorFile[0] = "./DumpOutput/8194nk5LbLH_0.sens";
 //s_binaryDumpSensorFile[1] = "./DumpOutput/8194nk5LbLH_1.sens";
 //s_binaryDumpSensorFile[2] = "./DumpOutput/8194nk5LbLH_2.sens";
-s_binaryDumpSensorFile[0] = "Dump/test.sens";
+//s_binaryDumpSensorFile[0] = "C:\Users\14109\Downloads\fountain_all\scene0012_01.sens";
+s_binaryDumpSensorFile[0] = "C:\Users\14109\Downloads\fountain_all\fountain_all\";
 
 s_binaryDumpSensorUseTrajectory = true;
 s_binaryDumpSensorUseTrajectoryOnlyInit = false;	//only valid if prev is true; precomputed traj for ICP, which is run

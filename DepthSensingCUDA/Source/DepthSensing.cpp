@@ -3,6 +3,7 @@
 #include "DepthSensing.h"
 #include "StructureSensor.h"
 #include "SensorDataReader.h"
+#include "SensorDataReaderZhou.h"
 
 //--------------------------------------------------------------------------------------
 // Global variables
@@ -119,7 +120,15 @@ RGBDSensor* getRGBDSensor()
 		g_sensor = new SensorDataReader;
 		return g_sensor;
 #else
-		throw MLIB_EXCEPTION("Requires STRUCTURE_SENSOR macro");
+		throw MLIB_EXCEPTION("Requires SENSOR_DATA_READER macro");
+#endif
+	}
+	if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataFileReader) {
+#ifdef SENSOR_DATA_FILE_READER
+		g_sensor = new SensorDataReaderZhou(1, GlobalAppState::get().s_nVideoFrame, GlobalAppState::get().s_startFrame);
+		return g_sensor;
+#else
+		throw MLIB_EXCEPTION("Requires SENSOR_DATA_FILE_READER macro");
 #endif
 	}
 
@@ -733,6 +742,28 @@ void reconstruction()
 					&& GlobalAppState::get().s_binaryDumpSensorUseTrajectoryOnlyInit) {
 					//deltaTransformEstimate = lastTransform.getInverse() * transformation;	//simple case; not ideal in case of drift
 					//deltaTransformEstimate = g_RGBDAdapter.getRigidTransform(-1).getInverse() * transformation;
+
+					/*mat4f lastTransform = g_sceneRep->getLastRigidTransform();
+					mat4f deltaTransformEstimate = mat4f::identity();
+
+					transformation = g_cameraTracking->applyCT(
+					g_CudaDepthSensor.getCameraSpacePositionsFloat4(), g_CudaDepthSensor.getNormalMapFloat4(), g_CudaDepthSensor.getColorMapFilteredFloat4(),
+					//g_rayCast->getRayCastData().d_depth4Transformed, g_CudaDepthSensor.getNormalMapNoRefinementFloat4(), g_CudaDepthSensor.getColorMapFilteredFloat4(),
+					g_rayCast->getRayCastData().d_depth4, g_rayCast->getRayCastData().d_normals, g_rayCast->getRayCastData().d_colors,
+					lastTransform,
+					GlobalCameraTrackingState::getInstance().s_maxInnerIter, GlobalCameraTrackingState::getInstance().s_maxOuterIter,
+					GlobalCameraTrackingState::getInstance().s_distThres, GlobalCameraTrackingState::getInstance().s_normalThres,
+					100.0f, 3.0f,
+					deltaTransformEstimate,
+					GlobalCameraTrackingState::getInstance().s_residualEarlyOut,
+					g_RGBDAdapter.getDepthIntrinsics(), g_CudaDepthSensor.getDepthCameraData(),
+					NULL);
+
+					transformation = g_RGBDAdapter.getRigidTransform();
+					if (transformation[0] == -std::numeric_limits<float>::infinity()) {
+						std::cout << "INVALID FRAME" << std::endl;
+						return;					
+					}*/
 				}
 
 				const bool useRGBDTracking = false;	//Depth vs RGBD

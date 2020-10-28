@@ -1,0 +1,14 @@
+.vs/
+*.user
+CompiledShaders/
+*.pdb
+*.deps
+*.cache
+*.log
+*.tlog
+*FileListAbsolute.txt
+*.obj
+*.exe
+*.ipdb
+*.pch
+*.iobj
