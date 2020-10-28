@@ -661,7 +661,7 @@ void reconstruction()
 {
 
 	//only if binary dump
-	if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_BinaryDumpReader || GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader) {
+	if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_BinaryDumpReader || GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader || GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataFileReader) {
 		unsigned int heapFreeCount = g_sceneRep->getHeapFreeCount();
 		std::cout << "[ frame " << g_RGBDAdapter.getFrameNumber() << " ] " << " [Free SDFBlocks " << heapFreeCount << " ] " << std::endl;
 		if (heapFreeCount < 5000) std::cout << "WARNING: Heap Free Count is low!  if crash, increase s_hashNumSDFBlocks" << std::endl;
@@ -877,9 +877,9 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 	pd3dImmediateContext->ClearRenderTargetView(pRTV, ClearColor);
 	pd3dImmediateContext->ClearDepthStencilView(pDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-#ifdef SENSOR_DATA_READER
+#if defined(SENSOR_DATA_READER) || defined(SENSOR_DATA_FILE_READER)
 	//only if sensor data reader
-	if (GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader && GlobalAppState::get().s_playData) {
+	if ((GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataReader || GlobalAppState::get().s_sensorIdx == GlobalAppState::Sensor_SensorDataFileReader) && GlobalAppState::get().s_playData) {
 		SensorDataReader* sensor = (SensorDataReader*)getRGBDSensor();
 
 		if (sensor->getCurrFrame() >= sensor->getNumFrames()) {
