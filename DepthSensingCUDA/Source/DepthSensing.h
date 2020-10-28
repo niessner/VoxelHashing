@@ -43,6 +43,7 @@
 #include "CUDASceneRepChunkGrid.h"
 
 #include <iomanip>
+#pragma comment(lib, "legacy_stdio_definitions.lib")
 
 #ifdef KINECT
 #pragma comment(lib, "Kinect10.lib")

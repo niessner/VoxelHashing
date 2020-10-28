@@ -21,18 +21,18 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 7.5.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.1.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -50,8 +50,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x64;$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath);$(WindowsSDK_IncludePath);$(KINECTSDK10_DIR)\inc;$(KINECTSDK20_DIR)\inc;$(OPENNI2_INCLUDE64);$(DXSDK_DIR)Include;./Source/;./Include;./Include/Intel;./Include/cutil/inc;./Include/Uplink</IncludePath>
-    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(KINECTSDK10_DIR)\lib\amd64;$(CUDA_LIB_PATH);$(KINECTSDK20_DIR)\lib\x64;$(OPENNI2_LIB64);Libs</LibraryPath>
+    <IncludePath>$(IncludePath);$(WindowsSDK_IncludePath);$(KINECTSDK10_DIR)\inc;$(KINECTSDK20_DIR)\inc;$(OPENNI2_INCLUDE64);$(DXSDK_DIR)Include;./Source/;./Include;./Include/Intel;./Include/cutil/inc;./Include/Uplink;C:\Users\14109\Downloads\opencv\build\include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(DXSDK_DIR)Lib\x64;$(KINECTSDK10_DIR)\lib\amd64;$(CUDA_LIB_PATH);$(KINECTSDK20_DIR)\lib\x64;$(OPENNI2_LIB64);Libs;C:\Users\14109\Downloads\opencv\build\x64\vc15\lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -103,12 +103,12 @@
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dx11.lib;d3dx9.lib;dxerr.lib;dxguid.lib;winmm.lib;comctl32.lib;Shlwapi.lib;cudart.lib;cublas.lib;FreeImage.lib;zlib64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dx11.lib;d3dx9.lib;dxerr.lib;dxguid.lib;winmm.lib;comctl32.lib;Shlwapi.lib;cudart.lib;cublas.lib;FreeImage.lib;zlib64.lib;opencv_world440.lib;opencv_world440d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../opencv/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../opencv/lib/;C:\Users\14109\Downloads\opencv\build\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <EnableDPIAwareness>true</EnableDPIAwareness>
@@ -203,6 +203,8 @@
     <ClCompile Include="Source\RealSenseSensor.cpp" />
     <ClCompile Include="Source\RGBDSensor.cpp" />
     <ClCompile Include="Source\SensorDataReader.cpp" />
+    <ClCompile Include="Source\SensorDataReaderZhou.cpp" />
+    <ClCompile Include="Source\sensordatazhou.cpp" />
     <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -269,6 +271,8 @@
     <ClInclude Include="Source\Resource.h" />
     <ClInclude Include="Source\RGBDSensor.h" />
     <ClInclude Include="Source\SensorDataReader.h" />
+    <ClInclude Include="Source\SensorDataReaderZhou.h" />
+    <ClInclude Include="Source\sensordatazhou.h" />
     <ClInclude Include="Source\stdafx.h" />
     <ClInclude Include="Source\StdOutputLogger.h" />
     <ClInclude Include="Source\StructureSensor.h" />
@@ -310,6 +314,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 7.5.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.1.targets" />
   </ImportGroup>
 </Project>
